@@ -1,0 +1,500 @@
+2025-09-16T10:49:36.852Z [EG:config] [36mverbose[39m: Registered schema for users model.
+2025-09-16T10:49:36.855Z [EG:config] [36mverbose[39m: Registered schema for credentials model.
+2025-09-16T10:49:36.856Z [EG:config] [36mverbose[39m: Registered schema for applications model.
+2025-09-16T10:49:36.857Z [EG:config] [34mdebug[39m: pluginPath replaced with default value in configuration file
+2025-09-16T10:49:36.863Z [EG:config] [34mdebug[39m: ConfigPath: C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\system.config.yml
+2025-09-16T10:49:36.863Z [EG:config] [34mdebug[39m: EXPRESS_GATEWAY_PORT replaced in configuration file
+2025-09-16T10:49:36.870Z [EG:config] [34mdebug[39m: ConfigPath: C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\gateway.config.yml
+2025-09-16T10:49:36.872Z [EG:plugins] [34mdebug[39m: Loading plugins. Plugin engine version: 1.2.0
+2025-09-16T10:49:36.872Z [EG:plugins] [34mdebug[39m: Loading plugin ./plugins/logger-plugin
+Loaded index.js
+2025-09-16T10:49:37.172Z [EG:plugins] [32minfo[39m: Loaded plugin logger-plugin from package ./plugins/logger-plugin
+2025-09-16T10:49:37.250Z [EG:gateway] [36mverbose[39m: registering policy custom-logger from undefined plugin
+2025-09-16T10:49:37.251Z [EG:policy] [34mdebug[39m: registering policy basic-auth
+2025-09-16T10:49:37.254Z [EG:policy] [34mdebug[39m: registering policy cors
+2025-09-16T10:49:37.258Z [EG:policy] [34mdebug[39m: registering policy expression
+2025-09-16T10:49:37.261Z [EG:policy] [34mdebug[39m: registering policy key-auth
+2025-09-16T10:49:37.264Z [EG:policy] [34mdebug[39m: registering policy log
+2025-09-16T10:49:37.266Z [EG:policy] [34mdebug[39m: registering policy oauth2
+2025-09-16T10:49:37.328Z [EG:policy] [34mdebug[39m: registering policy proxy
+2025-09-16T10:49:37.461Z [EG:policy] [34mdebug[39m: registering policy rate-limit
+2025-09-16T10:49:37.488Z [EG:gateway] [36mverbose[39m: processing pipeline commonPipeline
+2025-09-16T10:49:37.490Z [EG:gateway] [36mverbose[39m: processing pipeline productPipeline
+2025-09-16T10:49:37.494Z [EG:gateway] [36mverbose[39m: processing pipeline cartPipeline
+2025-09-16T10:49:37.495Z [EG:gateway] [34mdebug[39m: loading apiEndpoints {"common":{"paths":"*"},"productApi":{"paths":["/myproduct","/myproduct/*"]},"cartApi":{"paths":["/mycart","/mycart/*"]}}
+2025-09-16T10:49:37.495Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T10:49:37.495Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"common","paths":"*"}
+2025-09-16T10:49:37.495Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T10:49:37.495Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]}
+2025-09-16T10:49:37.495Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T10:49:37.495Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}
+2025-09-16T10:49:37.495Z [EG:gateway] [34mdebug[39m: processing vhost * [{"apiEndpointName":"common","paths":"*"},{"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]},{"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}]
+2025-09-16T10:49:37.495Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName common, mount *
+2025-09-16T10:49:37.495Z [EG:gateway] [34mdebug[39m: executing pipeline for api common, mounted at *
+2025-09-16T10:49:37.496Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T10:49:37.496Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct
+2025-09-16T10:49:37.496Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct
+2025-09-16T10:49:37.496Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T10:49:37.496Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct/*
+2025-09-16T10:49:37.496Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct/*
+2025-09-16T10:49:37.496Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T10:49:37.496Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart
+2025-09-16T10:49:37.496Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart
+2025-09-16T10:49:37.496Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T10:49:37.496Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart/*
+2025-09-16T10:49:37.496Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart/*
+2025-09-16T10:49:37.496Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T10:49:37.497Z [EG:admin] [36mverbose[39m: Admin server is not configured, launch canceled
+2025-09-16T10:49:37.498Z [EG:db] [34mdebug[39m: Redis is ready
+2025-09-16T10:49:37.510Z [EG:gateway] [32minfo[39m: gateway http server listening on :::3600
+2025-09-16T10:50:29.450Z [EG:log-policy] [32minfo[39m: Request received:
+Protocol: http
+Method: GET
+Host: localhost:3600
+URL: /myproduct/
+Headers: {"host":"localhost:3600","connection":"keep-alive","cache-control":"max-age=0","sec-ch-ua":"\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"","sec-ch-ua-mobile":"?0","sec-ch-ua-platform":"\"Windows\"","upgrade-insecure-requests":"1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7","sec-fetch-site":"none","sec-fetch-mode":"navigate","sec-fetch-user":"?1","sec-fetch-dest":"document","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en;q=0.9","if-none-match":"W/\"b2-WC6dxf3JfoeG6FWdiiGUuqLEBm0\""}
+Timestamp: 2025-09-16T10:50:29.450Z
+
+[32minfo[39m: Received a request on http://localhost:3600/myproduct/ {"buildInfo":{"version":"1.0.0"},"service":"express-gateway"}
+2025-09-16T10:50:29.458Z [EG:policy] [34mdebug[39m: proxying to http://localhost:3601/, GET /myproduct/
+2025-09-16T10:50:32.470Z [EG:log-policy] [32minfo[39m: Request received:
+Protocol: http
+Method: GET
+Host: localhost:3600
+URL: /myproduct/
+Headers: {"host":"localhost:3600","connection":"keep-alive","cache-control":"max-age=0","sec-ch-ua":"\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"","sec-ch-ua-mobile":"?0","sec-ch-ua-platform":"\"Windows\"","upgrade-insecure-requests":"1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7","sec-fetch-site":"none","sec-fetch-mode":"navigate","sec-fetch-user":"?1","sec-fetch-dest":"document","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en;q=0.9","if-none-match":"W/\"b2-WC6dxf3JfoeG6FWdiiGUuqLEBm0\""}
+Timestamp: 2025-09-16T10:50:32.470Z
+
+[32minfo[39m: Received a request on http://localhost:3600/myproduct/ {"buildInfo":{"version":"1.0.0"},"service":"express-gateway"}
+2025-09-16T10:50:32.472Z [EG:policy] [34mdebug[39m: proxying to http://localhost:3601/, GET /myproduct/
+2025-09-16T10:50:33.403Z [EG:log-policy] [32minfo[39m: Request received:
+Protocol: http
+Method: GET
+Host: localhost:3600
+URL: /myproduct/
+Headers: {"host":"localhost:3600","connection":"keep-alive","cache-control":"max-age=0","sec-ch-ua":"\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"","sec-ch-ua-mobile":"?0","sec-ch-ua-platform":"\"Windows\"","upgrade-insecure-requests":"1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7","sec-fetch-site":"none","sec-fetch-mode":"navigate","sec-fetch-user":"?1","sec-fetch-dest":"document","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en;q=0.9","if-none-match":"W/\"b2-WC6dxf3JfoeG6FWdiiGUuqLEBm0\""}
+Timestamp: 2025-09-16T10:50:33.403Z
+
+[32minfo[39m: Received a request on http://localhost:3600/myproduct/ {"buildInfo":{"version":"1.0.0"},"service":"express-gateway"}
+2025-09-16T10:50:33.406Z [EG:policy] [34mdebug[39m: proxying to http://localhost:3601/, GET /myproduct/
+2025-09-16T10:50:34.497Z [EG:log-policy] [32minfo[39m: Request received:
+Protocol: http
+Method: GET
+Host: localhost:3600
+URL: /myproduct/
+Headers: {"host":"localhost:3600","connection":"keep-alive","cache-control":"max-age=0","sec-ch-ua":"\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"","sec-ch-ua-mobile":"?0","sec-ch-ua-platform":"\"Windows\"","upgrade-insecure-requests":"1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7","sec-fetch-site":"none","sec-fetch-mode":"navigate","sec-fetch-user":"?1","sec-fetch-dest":"document","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en;q=0.9","if-none-match":"W/\"b2-WC6dxf3JfoeG6FWdiiGUuqLEBm0\""}
+Timestamp: 2025-09-16T10:50:34.497Z
+
+[32minfo[39m: Received a request on http://localhost:3600/myproduct/ {"buildInfo":{"version":"1.0.0"},"service":"express-gateway"}
+2025-09-16T10:50:34.501Z [EG:policy] [34mdebug[39m: proxying to http://localhost:3601/, GET /myproduct/
+2025-09-16T10:50:35.367Z [EG:log-policy] [32minfo[39m: Request received:
+Protocol: http
+Method: GET
+Host: localhost:3600
+URL: /myproduct/
+Headers: {"host":"localhost:3600","connection":"keep-alive","cache-control":"max-age=0","sec-ch-ua":"\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"","sec-ch-ua-mobile":"?0","sec-ch-ua-platform":"\"Windows\"","upgrade-insecure-requests":"1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7","sec-fetch-site":"none","sec-fetch-mode":"navigate","sec-fetch-user":"?1","sec-fetch-dest":"document","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en;q=0.9","if-none-match":"W/\"b2-WC6dxf3JfoeG6FWdiiGUuqLEBm0\""}
+Timestamp: 2025-09-16T10:50:35.367Z
+
+[32minfo[39m: Received a request on http://localhost:3600/myproduct/ {"buildInfo":{"version":"1.0.0"},"service":"express-gateway"}
+2025-09-16T10:50:35.369Z [EG:policy] [34mdebug[39m: proxying to http://localhost:3601/, GET /myproduct/
+2025-09-16T10:51:23.709Z [EG:config] [32minfo[39m: change event on C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\gateway.config.yml file. Reloading gateway config file
+2025-09-16T10:51:23.710Z [EG:config] [34mdebug[39m: EXPRESS_GATEWAY_PORT replaced in configuration file
+2025-09-16T10:51:23.712Z [EG:config] [34mdebug[39m: ConfigPath: C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\gateway.config.yml
+2025-09-16T10:51:23.712Z [EG:plugins] [34mdebug[39m: Loading plugins. Plugin engine version: 1.2.0
+2025-09-16T10:51:23.712Z [EG:plugins] [34mdebug[39m: Loading plugin ./plugins/logger-plugin
+2025-09-16T10:51:23.715Z [EG:plugins] [32minfo[39m: Loaded plugin logger-plugin from package ./plugins/logger-plugin
+2025-09-16T10:51:23.716Z [EG:gateway] [36mverbose[39m: registering policy custom-logger from undefined plugin
+2025-09-16T10:51:23.720Z [EG:gateway] [36mverbose[39m: processing pipeline commonPipeline
+2025-09-16T10:51:23.722Z [EG:gateway] [36mverbose[39m: processing pipeline productPipeline
+2025-09-16T10:51:23.723Z [EG:gateway] [36mverbose[39m: processing pipeline cartPipeline
+2025-09-16T10:51:23.724Z [EG:gateway] [34mdebug[39m: loading apiEndpoints {"common":{"paths":"*"},"productApi":{"paths":["/myproduct","/myproduct/*"]},"cartApi":{"paths":["/mycart","/mycart/*"]}}
+2025-09-16T10:51:23.724Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T10:51:23.724Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"common","paths":"*"}
+2025-09-16T10:51:23.725Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T10:51:23.725Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]}
+2025-09-16T10:51:23.725Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T10:51:23.725Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}
+2025-09-16T10:51:23.725Z [EG:gateway] [34mdebug[39m: processing vhost * [{"apiEndpointName":"common","paths":"*"},{"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]},{"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}]
+2025-09-16T10:51:23.725Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName common, mount *
+2025-09-16T10:51:23.727Z [EG:gateway] [34mdebug[39m: executing pipeline for api common, mounted at *
+2025-09-16T10:51:23.727Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T10:51:23.727Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct
+2025-09-16T10:51:23.728Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct
+2025-09-16T10:51:23.728Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T10:51:23.728Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct/*
+2025-09-16T10:51:23.728Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct/*
+2025-09-16T10:51:23.728Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T10:51:23.728Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart
+2025-09-16T10:51:23.728Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart
+2025-09-16T10:51:23.728Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T10:51:23.729Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart/*
+2025-09-16T10:51:23.729Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart/*
+2025-09-16T10:51:23.729Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T10:51:23.729Z [EG:gateway] [32minfo[39m: hot-reload config completed
+2025-09-16T10:51:35.182Z [EG:config] [36mverbose[39m: Registered schema for users model.
+2025-09-16T10:51:35.185Z [EG:config] [36mverbose[39m: Registered schema for credentials model.
+2025-09-16T10:51:35.192Z [EG:config] [36mverbose[39m: Registered schema for applications model.
+2025-09-16T10:51:35.192Z [EG:config] [34mdebug[39m: pluginPath replaced with default value in configuration file
+2025-09-16T10:51:35.200Z [EG:config] [34mdebug[39m: ConfigPath: C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\system.config.yml
+2025-09-16T10:51:35.200Z [EG:config] [34mdebug[39m: EXPRESS_GATEWAY_PORT replaced in configuration file
+2025-09-16T10:51:35.208Z [EG:config] [34mdebug[39m: ConfigPath: C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\gateway.config.yml
+2025-09-16T10:51:35.208Z [EG:plugins] [34mdebug[39m: Loading plugins. Plugin engine version: 1.2.0
+2025-09-16T10:51:35.209Z [EG:plugins] [34mdebug[39m: Loading plugin ./plugins/logger-plugin
+Loaded index.js
+2025-09-16T10:51:35.515Z [EG:plugins] [32minfo[39m: Loaded plugin logger-plugin from package ./plugins/logger-plugin
+2025-09-16T10:51:35.598Z [EG:gateway] [36mverbose[39m: registering policy custom-logger from undefined plugin
+2025-09-16T10:51:35.599Z [EG:policy] [34mdebug[39m: registering policy basic-auth
+2025-09-16T10:51:35.605Z [EG:policy] [34mdebug[39m: registering policy cors
+2025-09-16T10:51:35.610Z [EG:policy] [34mdebug[39m: registering policy expression
+2025-09-16T10:51:35.613Z [EG:policy] [34mdebug[39m: registering policy key-auth
+2025-09-16T10:51:35.618Z [EG:policy] [34mdebug[39m: registering policy log
+2025-09-16T10:51:35.619Z [EG:policy] [34mdebug[39m: registering policy oauth2
+2025-09-16T10:51:35.691Z [EG:policy] [34mdebug[39m: registering policy proxy
+2025-09-16T10:51:35.861Z [EG:policy] [34mdebug[39m: registering policy rate-limit
+2025-09-16T10:51:35.897Z [EG:gateway] [36mverbose[39m: processing pipeline commonPipeline
+2025-09-16T10:51:35.898Z [EG:gateway] [36mverbose[39m: processing pipeline productPipeline
+2025-09-16T10:51:35.901Z [EG:gateway] [36mverbose[39m: processing pipeline cartPipeline
+2025-09-16T10:51:35.901Z [EG:gateway] [34mdebug[39m: loading apiEndpoints {"common":{"paths":"*"},"productApi":{"paths":["/myproduct","/myproduct/*"]},"cartApi":{"paths":["/mycart","/mycart/*"]}}
+2025-09-16T10:51:35.902Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T10:51:35.902Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"common","paths":"*"}
+2025-09-16T10:51:35.902Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T10:51:35.902Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]}
+2025-09-16T10:51:35.902Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T10:51:35.902Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}
+2025-09-16T10:51:35.902Z [EG:gateway] [34mdebug[39m: processing vhost * [{"apiEndpointName":"common","paths":"*"},{"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]},{"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}]
+2025-09-16T10:51:35.902Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName common, mount *
+2025-09-16T10:51:35.902Z [EG:gateway] [34mdebug[39m: executing pipeline for api common, mounted at *
+2025-09-16T10:51:35.902Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T10:51:35.902Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct
+2025-09-16T10:51:35.902Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct
+2025-09-16T10:51:35.903Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T10:51:35.903Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct/*
+2025-09-16T10:51:35.903Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct/*
+2025-09-16T10:51:35.903Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T10:51:35.903Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart
+2025-09-16T10:51:35.903Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart
+2025-09-16T10:51:35.903Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T10:51:35.903Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart/*
+2025-09-16T10:51:35.903Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart/*
+2025-09-16T10:51:35.903Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T10:51:35.904Z [EG:admin] [36mverbose[39m: Admin server is not configured, launch canceled
+2025-09-16T10:51:35.906Z [EG:db] [34mdebug[39m: Redis is ready
+2025-09-16T10:51:35.917Z [EG:gateway] [32minfo[39m: gateway http server listening on :::3600
+2025-09-16T10:51:52.643Z [EG:log-policy] [32minfo[39m: Request received:
+Protocol: http
+Method: GET
+Host: localhost:3600
+URL: /myproduct/
+Headers: {"host":"localhost:3600","connection":"keep-alive","cache-control":"max-age=0","sec-ch-ua":"\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"","sec-ch-ua-mobile":"?0","sec-ch-ua-platform":"\"Windows\"","upgrade-insecure-requests":"1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7","sec-fetch-site":"none","sec-fetch-mode":"navigate","sec-fetch-user":"?1","sec-fetch-dest":"document","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en;q=0.9","if-none-match":"W/\"b2-WC6dxf3JfoeG6FWdiiGUuqLEBm0\""}
+Timestamp: 2025-09-16T10:51:52.643Z
+
+[32minfo[39m: Received a request on http://localhost:3600/myproduct/ {"buildInfo":{"version":"1.0.0"},"service":"express-gateway"}
+2025-09-16T10:51:52.654Z [EG:policy] [34mdebug[39m: proxying to http://localhost:3601/, GET /myproduct/
+2025-09-16T10:51:53.604Z [EG:log-policy] [32minfo[39m: Request received:
+Protocol: http
+Method: GET
+Host: localhost:3600
+URL: /myproduct/
+Headers: {"host":"localhost:3600","connection":"keep-alive","cache-control":"max-age=0","sec-ch-ua":"\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"","sec-ch-ua-mobile":"?0","sec-ch-ua-platform":"\"Windows\"","upgrade-insecure-requests":"1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7","sec-fetch-site":"none","sec-fetch-mode":"navigate","sec-fetch-user":"?1","sec-fetch-dest":"document","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en;q=0.9","if-none-match":"W/\"b2-WC6dxf3JfoeG6FWdiiGUuqLEBm0\""}
+Timestamp: 2025-09-16T10:51:53.604Z
+
+[32minfo[39m: Received a request on http://localhost:3600/myproduct/ {"buildInfo":{"version":"1.0.0"},"service":"express-gateway"}
+2025-09-16T10:51:54.621Z [EG:policy] [34mdebug[39m: proxying to http://localhost:3601/, GET /myproduct/
+2025-09-16T10:51:56.946Z [EG:log-policy] [32minfo[39m: Request received:
+Protocol: http
+Method: GET
+Host: localhost:3600
+URL: /myproduct/
+Headers: {"host":"localhost:3600","connection":"keep-alive","cache-control":"max-age=0","sec-ch-ua":"\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"","sec-ch-ua-mobile":"?0","sec-ch-ua-platform":"\"Windows\"","upgrade-insecure-requests":"1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7","sec-fetch-site":"none","sec-fetch-mode":"navigate","sec-fetch-user":"?1","sec-fetch-dest":"document","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en;q=0.9","if-none-match":"W/\"b2-WC6dxf3JfoeG6FWdiiGUuqLEBm0\""}
+Timestamp: 2025-09-16T10:51:56.946Z
+
+[32minfo[39m: Received a request on http://localhost:3600/myproduct/ {"buildInfo":{"version":"1.0.0"},"service":"express-gateway"}
+2025-09-16T10:51:58.961Z [EG:policy] [34mdebug[39m: proxying to http://localhost:3601/, GET /myproduct/
+2025-09-16T10:52:00.766Z [EG:log-policy] [32minfo[39m: Request received:
+Protocol: http
+Method: GET
+Host: localhost:3600
+URL: /myproduct/
+Headers: {"host":"localhost:3600","connection":"keep-alive","cache-control":"max-age=0","sec-ch-ua":"\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"","sec-ch-ua-mobile":"?0","sec-ch-ua-platform":"\"Windows\"","upgrade-insecure-requests":"1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7","sec-fetch-site":"none","sec-fetch-mode":"navigate","sec-fetch-user":"?1","sec-fetch-dest":"document","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en;q=0.9","if-none-match":"W/\"b2-WC6dxf3JfoeG6FWdiiGUuqLEBm0\""}
+Timestamp: 2025-09-16T10:52:00.766Z
+
+[32minfo[39m: Received a request on http://localhost:3600/myproduct/ {"buildInfo":{"version":"1.0.0"},"service":"express-gateway"}
+2025-09-16T10:52:03.781Z [EG:policy] [34mdebug[39m: proxying to http://localhost:3601/, GET /myproduct/
+2025-09-16T10:52:05.489Z [EG:log-policy] [32minfo[39m: Request received:
+Protocol: http
+Method: GET
+Host: localhost:3600
+URL: /myproduct/
+Headers: {"host":"localhost:3600","connection":"keep-alive","cache-control":"max-age=0","sec-ch-ua":"\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"","sec-ch-ua-mobile":"?0","sec-ch-ua-platform":"\"Windows\"","upgrade-insecure-requests":"1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7","sec-fetch-site":"none","sec-fetch-mode":"navigate","sec-fetch-user":"?1","sec-fetch-dest":"document","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en;q=0.9","if-none-match":"W/\"b2-WC6dxf3JfoeG6FWdiiGUuqLEBm0\""}
+Timestamp: 2025-09-16T10:52:05.489Z
+
+[32minfo[39m: Received a request on http://localhost:3600/myproduct/ {"buildInfo":{"version":"1.0.0"},"service":"express-gateway"}
+2025-09-16T10:52:08.846Z [EG:log-policy] [32minfo[39m: Request received:
+Protocol: http
+Method: GET
+Host: localhost:3600
+URL: /mycart/
+Headers: {"host":"localhost:3600","connection":"keep-alive","cache-control":"max-age=0","sec-ch-ua":"\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"","sec-ch-ua-mobile":"?0","sec-ch-ua-platform":"\"Windows\"","upgrade-insecure-requests":"1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7","sec-fetch-site":"none","sec-fetch-mode":"navigate","sec-fetch-user":"?1","sec-fetch-dest":"document","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en;q=0.9","if-none-match":"W/\"a5-kuv+WEW8bkB3EPNjCMuS+U7rC0U\""}
+Timestamp: 2025-09-16T10:52:08.846Z
+
+[32minfo[39m: Received a request on http://localhost:3600/mycart/ {"buildInfo":{"version":"1.0.0"},"service":"express-gateway"}
+2025-09-16T10:54:36.894Z [EG:log-policy] [32minfo[39m: Request received:
+Protocol: http
+Method: GET
+Host: localhost:3600
+URL: /mycart/
+Headers: {"host":"localhost:3600","connection":"keep-alive","cache-control":"max-age=0","sec-ch-ua":"\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"","sec-ch-ua-mobile":"?0","sec-ch-ua-platform":"\"Windows\"","upgrade-insecure-requests":"1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7","sec-fetch-site":"none","sec-fetch-mode":"navigate","sec-fetch-user":"?1","sec-fetch-dest":"document","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en;q=0.9"}
+Timestamp: 2025-09-16T10:54:36.892Z
+
+[32minfo[39m: Received a request on http://localhost:3600/mycart/ {"buildInfo":{"version":"1.0.0"},"service":"express-gateway"}
+2025-09-16T10:54:36.918Z [EG:policy] [34mdebug[39m: proxying to http://localhost:3602/, GET /mycart/
+2025-09-16T10:54:38.167Z [EG:log-policy] [32minfo[39m: Request received:
+Protocol: http
+Method: GET
+Host: localhost:3600
+URL: /mycart/
+Headers: {"host":"localhost:3600","connection":"keep-alive","cache-control":"max-age=0","sec-ch-ua":"\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"","sec-ch-ua-mobile":"?0","sec-ch-ua-platform":"\"Windows\"","upgrade-insecure-requests":"1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7","sec-fetch-site":"none","sec-fetch-mode":"navigate","sec-fetch-user":"?1","sec-fetch-dest":"document","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en;q=0.9","if-none-match":"W/\"a5-kuv+WEW8bkB3EPNjCMuS+U7rC0U\""}
+Timestamp: 2025-09-16T10:54:38.167Z
+
+[32minfo[39m: Received a request on http://localhost:3600/mycart/ {"buildInfo":{"version":"1.0.0"},"service":"express-gateway"}
+2025-09-16T10:54:39.191Z [EG:policy] [34mdebug[39m: proxying to http://localhost:3602/, GET /mycart/
+2025-09-16T10:54:42.586Z [EG:log-policy] [32minfo[39m: Request received:
+Protocol: http
+Method: GET
+Host: localhost:3600
+URL: /mycart/
+Headers: {"host":"localhost:3600","connection":"keep-alive","cache-control":"max-age=0","sec-ch-ua":"\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"","sec-ch-ua-mobile":"?0","sec-ch-ua-platform":"\"Windows\"","upgrade-insecure-requests":"1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7","sec-fetch-site":"none","sec-fetch-mode":"navigate","sec-fetch-user":"?1","sec-fetch-dest":"document","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en;q=0.9","if-none-match":"W/\"a5-kuv+WEW8bkB3EPNjCMuS+U7rC0U\""}
+Timestamp: 2025-09-16T10:54:42.586Z
+
+[32minfo[39m: Received a request on http://localhost:3600/mycart/ {"buildInfo":{"version":"1.0.0"},"service":"express-gateway"}
+2025-09-16T12:21:30.020Z [EG:config] [32minfo[39m: change event on C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\gateway.config.yml file. Reloading gateway config file
+2025-09-16T12:21:30.038Z [EG:config] [34mdebug[39m: EXPRESS_GATEWAY_PORT replaced in configuration file
+2025-09-16T12:21:30.055Z [EG:config] [34mdebug[39m: ConfigPath: C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\gateway.config.yml
+2025-09-16T12:21:30.060Z [EG:plugins] [34mdebug[39m: Loading plugins. Plugin engine version: 1.2.0
+2025-09-16T12:21:30.060Z [EG:plugins] [34mdebug[39m: Loading plugin ./plugins/logger-plugin
+2025-09-16T12:21:30.088Z [EG:plugins] [32minfo[39m: Loaded plugin logger-plugin from package ./plugins/logger-plugin
+2025-09-16T12:21:30.089Z [EG:gateway] [36mverbose[39m: registering policy custom-logger from undefined plugin
+2025-09-16T12:21:30.101Z [EG:gateway] [36mverbose[39m: processing pipeline commonPipeline
+2025-09-16T12:21:30.106Z [EG:gateway] [36mverbose[39m: processing pipeline productPipeline
+2025-09-16T12:21:30.111Z [EG:gateway] [36mverbose[39m: processing pipeline cartPipeline
+2025-09-16T12:21:30.112Z [EG:gateway] [34mdebug[39m: loading apiEndpoints {"common":{"paths":"*"},"productApi":{"paths":["/myproduct","/myproduct/*"]},"cartApi":{"paths":["/mycart","/mycart/*"]}}
+2025-09-16T12:21:30.113Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T12:21:30.113Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"common","paths":"*"}
+2025-09-16T12:21:30.114Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T12:21:30.114Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]}
+2025-09-16T12:21:30.114Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T12:21:30.114Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}
+2025-09-16T12:21:30.114Z [EG:gateway] [34mdebug[39m: processing vhost * [{"apiEndpointName":"common","paths":"*"},{"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]},{"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}]
+2025-09-16T12:21:30.115Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName common, mount *
+2025-09-16T12:21:30.115Z [EG:gateway] [34mdebug[39m: executing pipeline for api common, mounted at *
+2025-09-16T12:21:30.115Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T12:21:30.115Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct
+2025-09-16T12:21:30.115Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct
+2025-09-16T12:21:30.115Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T12:21:30.115Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct/*
+2025-09-16T12:21:30.115Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct/*
+2025-09-16T12:21:30.115Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T12:21:30.115Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart
+2025-09-16T12:21:30.115Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart
+2025-09-16T12:21:30.115Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T12:21:30.116Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart/*
+2025-09-16T12:21:30.116Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart/*
+2025-09-16T12:21:30.116Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T12:21:30.117Z [EG:gateway] [32minfo[39m: hot-reload config completed
+2025-09-16T14:28:40.757Z [EG:config] [36mverbose[39m: Registered schema for users model.
+2025-09-16T14:28:40.760Z [EG:config] [36mverbose[39m: Registered schema for credentials model.
+2025-09-16T14:28:40.761Z [EG:config] [36mverbose[39m: Registered schema for applications model.
+2025-09-16T14:28:40.761Z [EG:config] [34mdebug[39m: pluginPath replaced with default value in configuration file
+2025-09-16T14:28:40.766Z [EG:config] [34mdebug[39m: ConfigPath: C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\system.config.yml
+2025-09-16T14:28:40.767Z [EG:config] [34mdebug[39m: EXPRESS_GATEWAY_PORT replaced in configuration file
+2025-09-16T14:28:40.774Z [EG:config] [34mdebug[39m: ConfigPath: C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\gateway.config.yml
+2025-09-16T14:28:40.775Z [EG:plugins] [34mdebug[39m: Loading plugins. Plugin engine version: 1.2.0
+2025-09-16T14:28:40.775Z [EG:plugins] [34mdebug[39m: Loading plugin ./plugins/logger-plugin
+Loaded index.js
+2025-09-16T14:28:41.338Z [EG:plugins] [32minfo[39m: Loaded plugin logger-plugin from package ./plugins/logger-plugin
+2025-09-16T14:28:41.489Z [EG:gateway] [36mverbose[39m: registering policy custom-logger from undefined plugin
+2025-09-16T14:28:41.489Z [EG:policy] [34mdebug[39m: registering policy basic-auth
+2025-09-16T14:28:41.497Z [EG:policy] [34mdebug[39m: registering policy cors
+2025-09-16T14:28:41.503Z [EG:policy] [34mdebug[39m: registering policy expression
+2025-09-16T14:28:41.506Z [EG:policy] [34mdebug[39m: registering policy key-auth
+2025-09-16T14:28:41.509Z [EG:policy] [34mdebug[39m: registering policy log
+2025-09-16T14:28:41.511Z [EG:policy] [34mdebug[39m: registering policy oauth2
+2025-09-16T14:28:41.627Z [EG:policy] [34mdebug[39m: registering policy proxy
+2025-09-16T14:28:41.875Z [EG:policy] [34mdebug[39m: registering policy rate-limit
+2025-09-16T14:28:41.922Z [EG:gateway] [36mverbose[39m: processing pipeline commonPipeline
+2025-09-16T14:28:41.924Z [EG:gateway] [36mverbose[39m: processing pipeline productPipeline
+2025-09-16T14:28:41.927Z [EG:gateway] [36mverbose[39m: processing pipeline cartPipeline
+2025-09-16T14:28:41.927Z [EG:gateway] [34mdebug[39m: loading apiEndpoints {"common":{"paths":"*"},"productApi":{"paths":["/myproduct","/myproduct/*"]},"cartApi":{"paths":["/mycart","/mycart/*"]}}
+2025-09-16T14:28:41.928Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T14:28:41.928Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"common","paths":"*"}
+2025-09-16T14:28:41.928Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T14:28:41.928Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]}
+2025-09-16T14:28:41.928Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T14:28:41.928Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}
+2025-09-16T14:28:41.928Z [EG:gateway] [34mdebug[39m: processing vhost * [{"apiEndpointName":"common","paths":"*"},{"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]},{"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}]
+2025-09-16T14:28:41.928Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName common, mount *
+2025-09-16T14:28:41.929Z [EG:gateway] [34mdebug[39m: executing pipeline for api common, mounted at *
+2025-09-16T14:28:41.929Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T14:28:41.929Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct
+2025-09-16T14:28:41.929Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct
+2025-09-16T14:28:41.929Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T14:28:41.929Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct/*
+2025-09-16T14:28:41.929Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct/*
+2025-09-16T14:28:41.929Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T14:28:41.929Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart
+2025-09-16T14:28:41.929Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart
+2025-09-16T14:28:41.929Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T14:28:41.929Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart/*
+2025-09-16T14:28:41.929Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart/*
+2025-09-16T14:28:41.929Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T14:28:41.931Z [EG:admin] [36mverbose[39m: Admin server is not configured, launch canceled
+2025-09-16T14:28:41.932Z [EG:db] [34mdebug[39m: Redis is ready
+2025-09-16T14:28:41.949Z [EG:gateway] [32minfo[39m: gateway http server listening on :::3600
+2025-09-16T14:31:29.977Z [EG:config] [36mverbose[39m: Registered schema for users model.
+2025-09-16T14:31:29.980Z [EG:config] [36mverbose[39m: Registered schema for credentials model.
+2025-09-16T14:31:29.982Z [EG:config] [36mverbose[39m: Registered schema for applications model.
+2025-09-16T14:31:29.983Z [EG:config] [34mdebug[39m: pluginPath replaced with default value in configuration file
+2025-09-16T14:31:29.994Z [EG:config] [34mdebug[39m: ConfigPath: C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\system.config.yml
+2025-09-16T14:31:29.994Z [EG:config] [34mdebug[39m: EXPRESS_GATEWAY_PORT replaced in configuration file
+2025-09-16T14:31:29.994Z [EG:config] [33mwarn[39m: Unknown variable: PRODUCT_SVCS_PORT_1. Returning null.
+2025-09-16T14:31:29.994Z [EG:config] [33mwarn[39m: Unknown variable: PRODUCT_SVCS_PORT_2. Returning null.
+2025-09-16T14:31:29.994Z [EG:config] [33mwarn[39m: Unknown variable: PRODUCT_SVCS_PORT_3. Returning null.
+2025-09-16T14:31:29.995Z [EG:config] [33mwarn[39m: Unknown variable: CART_SVCS_PORT_1. Returning null.
+2025-09-16T14:31:29.995Z [EG:config] [33mwarn[39m: Unknown variable: CART_SVCS_PORT_2. Returning null.
+2025-09-16T14:31:29.995Z [EG:config] [33mwarn[39m: Unknown variable: CART_SVCS_PORT_3. Returning null.
+2025-09-16T14:31:30.003Z [EG:config] [34mdebug[39m: ConfigPath: C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\gateway.config.yml
+2025-09-16T14:31:30.003Z [EG:plugins] [34mdebug[39m: Loading plugins. Plugin engine version: 1.2.0
+2025-09-16T14:31:30.003Z [EG:plugins] [34mdebug[39m: Loading plugin ./plugins/logger-plugin
+Loaded index.js
+2025-09-16T14:31:30.341Z [EG:plugins] [32minfo[39m: Loaded plugin logger-plugin from package ./plugins/logger-plugin
+2025-09-16T14:31:30.435Z [EG:gateway] [36mverbose[39m: registering policy custom-logger from undefined plugin
+2025-09-16T14:31:30.436Z [EG:policy] [34mdebug[39m: registering policy basic-auth
+2025-09-16T14:31:30.441Z [EG:policy] [34mdebug[39m: registering policy cors
+2025-09-16T14:31:30.444Z [EG:policy] [34mdebug[39m: registering policy expression
+2025-09-16T14:31:30.446Z [EG:policy] [34mdebug[39m: registering policy key-auth
+2025-09-16T14:31:30.448Z [EG:policy] [34mdebug[39m: registering policy log
+2025-09-16T14:31:30.449Z [EG:policy] [34mdebug[39m: registering policy oauth2
+2025-09-16T14:31:30.517Z [EG:policy] [34mdebug[39m: registering policy proxy
+2025-09-16T14:31:30.672Z [EG:policy] [34mdebug[39m: registering policy rate-limit
+2025-09-16T14:31:30.699Z [EG:gateway] [36mverbose[39m: processing pipeline commonPipeline
+2025-09-16T14:31:30.700Z [EG:gateway] [36mverbose[39m: processing pipeline productPipeline
+2025-09-16T14:31:30.703Z [EG:gateway] [36mverbose[39m: processing pipeline cartPipeline
+2025-09-16T14:31:30.703Z [EG:gateway] [34mdebug[39m: loading apiEndpoints {"common":{"paths":"*"},"productApi":{"paths":["/myproduct","/myproduct/*"]},"cartApi":{"paths":["/mycart","/mycart/*"]}}
+2025-09-16T14:31:30.703Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T14:31:30.704Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"common","paths":"*"}
+2025-09-16T14:31:30.704Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T14:31:30.704Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]}
+2025-09-16T14:31:30.704Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T14:31:30.704Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}
+2025-09-16T14:31:30.704Z [EG:gateway] [34mdebug[39m: processing vhost * [{"apiEndpointName":"common","paths":"*"},{"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]},{"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}]
+2025-09-16T14:31:30.704Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName common, mount *
+2025-09-16T14:31:30.704Z [EG:gateway] [34mdebug[39m: executing pipeline for api common, mounted at *
+2025-09-16T14:31:30.704Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T14:31:30.705Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct
+2025-09-16T14:31:30.705Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct
+2025-09-16T14:31:30.705Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T14:31:30.706Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct/*
+2025-09-16T14:31:30.706Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct/*
+2025-09-16T14:31:30.706Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T14:31:30.706Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart
+2025-09-16T14:31:30.706Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart
+2025-09-16T14:31:30.706Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T14:31:30.706Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart/*
+2025-09-16T14:31:30.706Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart/*
+2025-09-16T14:31:30.706Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T14:31:30.707Z [EG:admin] [36mverbose[39m: Admin server is not configured, launch canceled
+2025-09-16T14:31:30.708Z [EG:db] [34mdebug[39m: Redis is ready
+2025-09-16T14:31:30.719Z [EG:gateway] [32minfo[39m: gateway http server listening on :::3600
+2025-09-16T14:31:51.287Z [EG:config] [32minfo[39m: change event on C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\gateway.config.yml file. Reloading gateway config file
+2025-09-16T14:31:51.289Z [EG:config] [34mdebug[39m: EXPRESS_GATEWAY_PORT replaced in configuration file
+2025-09-16T14:31:51.291Z [EG:config] [34mdebug[39m: ConfigPath: C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\gateway.config.yml
+2025-09-16T14:31:51.292Z [EG:plugins] [34mdebug[39m: Loading plugins. Plugin engine version: 1.2.0
+2025-09-16T14:31:51.292Z [EG:plugins] [34mdebug[39m: Loading plugin ./plugins/logger-plugin
+2025-09-16T14:31:51.295Z [EG:plugins] [32minfo[39m: Loaded plugin logger-plugin from package ./plugins/logger-plugin
+2025-09-16T14:31:51.295Z [EG:gateway] [36mverbose[39m: registering policy custom-logger from undefined plugin
+2025-09-16T14:31:51.297Z [EG:gateway] [36mverbose[39m: processing pipeline commonPipeline
+2025-09-16T14:31:51.298Z [EG:gateway] [36mverbose[39m: processing pipeline productPipeline
+2025-09-16T14:31:51.299Z [EG:gateway] [36mverbose[39m: processing pipeline cartPipeline
+2025-09-16T14:31:51.299Z [EG:gateway] [34mdebug[39m: loading apiEndpoints {"common":{"paths":"*"},"productApi":{"paths":["/myproduct","/myproduct/*"]},"cartApi":{"paths":["/mycart","/mycart/*"]}}
+2025-09-16T14:31:51.299Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T14:31:51.300Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"common","paths":"*"}
+2025-09-16T14:31:51.300Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T14:31:51.300Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]}
+2025-09-16T14:31:51.300Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-16T14:31:51.300Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}
+2025-09-16T14:31:51.300Z [EG:gateway] [34mdebug[39m: processing vhost * [{"apiEndpointName":"common","paths":"*"},{"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]},{"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}]
+2025-09-16T14:31:51.300Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName common, mount *
+2025-09-16T14:31:51.300Z [EG:gateway] [34mdebug[39m: executing pipeline for api common, mounted at *
+2025-09-16T14:31:51.300Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T14:31:51.300Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct
+2025-09-16T14:31:51.300Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct
+2025-09-16T14:31:51.300Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T14:31:51.301Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct/*
+2025-09-16T14:31:51.301Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct/*
+2025-09-16T14:31:51.301Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T14:31:51.303Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart
+2025-09-16T14:31:51.304Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart
+2025-09-16T14:31:51.304Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T14:31:51.304Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart/*
+2025-09-16T14:31:51.305Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart/*
+2025-09-16T14:31:51.305Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-16T14:31:51.305Z [EG:gateway] [32minfo[39m: hot-reload config completed
+2025-09-22T03:46:25.704Z [EG:config] [36mverbose[39m: Registered schema for users model.
+2025-09-22T03:46:25.710Z [EG:config] [36mverbose[39m: Registered schema for credentials model.
+2025-09-22T03:46:25.711Z [EG:config] [36mverbose[39m: Registered schema for applications model.
+2025-09-22T03:46:25.714Z [EG:config] [34mdebug[39m: pluginPath replaced with default value in configuration file
+2025-09-22T03:46:25.724Z [EG:config] [34mdebug[39m: ConfigPath: C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\system.config.yml
+2025-09-22T03:46:25.724Z [EG:config] [34mdebug[39m: EXPRESS_GATEWAY_PORT replaced in configuration file
+2025-09-22T03:46:25.731Z [EG:config] [34mdebug[39m: ConfigPath: C:\Users\User\angular\node-microservices\gateway\MicroservicesAPIGateway\config\gateway.config.yml
+2025-09-22T03:46:25.731Z [EG:plugins] [34mdebug[39m: Loading plugins. Plugin engine version: 1.2.0
+2025-09-22T03:46:25.731Z [EG:plugins] [34mdebug[39m: Loading plugin ./plugins/logger-plugin
+Loaded index.js
+2025-09-22T03:46:26.350Z [EG:plugins] [32minfo[39m: Loaded plugin logger-plugin from package ./plugins/logger-plugin
+2025-09-22T03:46:26.526Z [EG:gateway] [36mverbose[39m: registering policy custom-logger from undefined plugin
+2025-09-22T03:46:26.527Z [EG:policy] [34mdebug[39m: registering policy basic-auth
+2025-09-22T03:46:26.533Z [EG:policy] [34mdebug[39m: registering policy cors
+2025-09-22T03:46:26.539Z [EG:policy] [34mdebug[39m: registering policy expression
+2025-09-22T03:46:26.541Z [EG:policy] [34mdebug[39m: registering policy key-auth
+2025-09-22T03:46:26.544Z [EG:policy] [34mdebug[39m: registering policy log
+2025-09-22T03:46:26.547Z [EG:policy] [34mdebug[39m: registering policy oauth2
+2025-09-22T03:46:26.655Z [EG:policy] [34mdebug[39m: registering policy proxy
+2025-09-22T03:46:26.900Z [EG:policy] [34mdebug[39m: registering policy rate-limit
+2025-09-22T03:46:26.947Z [EG:gateway] [36mverbose[39m: processing pipeline commonPipeline
+2025-09-22T03:46:26.948Z [EG:gateway] [36mverbose[39m: processing pipeline productPipeline
+2025-09-22T03:46:26.951Z [EG:gateway] [36mverbose[39m: processing pipeline cartPipeline
+2025-09-22T03:46:26.951Z [EG:gateway] [34mdebug[39m: loading apiEndpoints {"common":{"paths":"*"},"productApi":{"paths":["/myproduct","/myproduct/*"]},"cartApi":{"paths":["/mycart","/mycart/*"]}}
+2025-09-22T03:46:26.952Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-22T03:46:26.952Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"common","paths":"*"}
+2025-09-22T03:46:26.952Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-22T03:46:26.952Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]}
+2025-09-22T03:46:26.952Z [EG:gateway] [34mdebug[39m: processing host: *, isRegex: false
+2025-09-22T03:46:26.952Z [EG:gateway] [34mdebug[39m: adding route to host: *, {"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}
+2025-09-22T03:46:26.952Z [EG:gateway] [34mdebug[39m: processing vhost * [{"apiEndpointName":"common","paths":"*"},{"apiEndpointName":"productApi","paths":["/myproduct","/myproduct/*"]},{"apiEndpointName":"cartApi","paths":["/mycart","/mycart/*"]}]
+2025-09-22T03:46:26.952Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName common, mount *
+2025-09-22T03:46:26.952Z [EG:gateway] [34mdebug[39m: executing pipeline for api common, mounted at *
+2025-09-22T03:46:26.952Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-22T03:46:26.953Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct
+2025-09-22T03:46:26.953Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct
+2025-09-22T03:46:26.953Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-22T03:46:26.953Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName productApi, mount /myproduct/*
+2025-09-22T03:46:26.953Z [EG:gateway] [34mdebug[39m: executing pipeline for api productApi, mounted at /myproduct/*
+2025-09-22T03:46:26.953Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-22T03:46:26.953Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart
+2025-09-22T03:46:26.953Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart
+2025-09-22T03:46:26.953Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-22T03:46:26.953Z [EG:gateway] [34mdebug[39m: mounting routes for apiEndpointName cartApi, mount /mycart/*
+2025-09-22T03:46:26.953Z [EG:gateway] [34mdebug[39m: executing pipeline for api cartApi, mounted at /mycart/*
+2025-09-22T03:46:26.953Z [EG:gateway] [34mdebug[39m: no methods specified. handle all mode.
+2025-09-22T03:46:26.955Z [EG:admin] [36mverbose[39m: Admin server is not configured, launch canceled
+2025-09-22T03:46:26.956Z [EG:db] [34mdebug[39m: Redis is ready
+2025-09-22T03:46:26.968Z [EG:gateway] [32minfo[39m: gateway http server listening on :::3600
+2025-09-22T08:06:23.302Z [EG:log-policy] [32minfo[39m: Request received:
+Protocol: http
+Method: GET
+Host: localhost:3600
+URL: /myproduct/products
+Headers: {"accept":"application/json, text/plain, */*","user-agent":"axios/1.11.0","accept-encoding":"gzip, compress, deflate, br","host":"localhost:3600","connection":"keep-alive"}
+Timestamp: 2025-09-22T08:06:23.302Z
+
+[32minfo[39m: Received a request on http://localhost:3600/myproduct/products {"buildInfo":{"version":"1.0.0"},"service":"express-gateway"}
+2025-09-22T08:06:23.314Z [EG:policy] [34mdebug[39m: proxying to http://localhost:3601/, GET /myproduct/products

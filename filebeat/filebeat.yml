@@ -1,0 +1,53 @@
+filebeat:
+   inputs:  #Inputs specify how Filebeat locates and processes input data.
+      - type: filestream
+        id: express-gateway  #Each filestream input must have a unique ID to allow tracking the state of files.
+        fields_under_root: true
+        encoding: utf-8
+        fields:
+           event.dataset: express-gateway
+           service_name: express-gateway
+        paths:
+            - /var/log/express-gateway/*.log
+      
+      - type: filestream
+        id: nginx-gateway  #Each filestream input must have a unique ID to allow tracking the state of files.
+        fields_under_root: true
+        encoding: utf-8
+        fields:
+           event.dataset: nginx-gateway
+           service_name: nginx-gateway
+        paths:
+            - /var/log/nginx/*.log
+
+#The input in this example harvests all files in the path /var/log/nginx/*.log,
+# which means that Filebeat will harvest all files in the directory /var/log/ that end with .log
+# When fields_under_root: true is enabled in your filebeat.yml configuration, any custom fields 
+# defined within an input or prospector will be added as top-level fields in the output document.
+#
+
+setup:
+   kibana:
+      host: "kibana:5601"
+
+output:
+  logstash:
+      hosts: 'logstash:5001'
+
+monitoring:
+  enabled: true
+  elasticsearch:
+    hosts: ["http://elasticsearch:9200"]
+
+multiline:
+  pattern: '^\['
+  negate: true
+  match: after
+
+exclude_files: ['*.gz', '*.tmp']
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~
+  - drop_fields:
+      fields: ["host", "agent"]

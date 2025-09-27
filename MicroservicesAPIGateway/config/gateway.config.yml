@@ -1,0 +1,82 @@
+http:
+  port: ${EXPRESS_GATEWAY_PORT}
+express:
+apiEndpoints:
+  common:
+    paths: "*"
+  productApi:
+    paths: ["/myproduct","/myproduct/*"]
+  cartApi:
+    paths: ["/mycart","/mycart/*"]
+serviceEndpoints:
+  productService:
+    urls:  
+     - http://localhost:3601
+    
+  cartService:
+    urls: 
+      - http://localhost:3602
+    
+policies:
+  - basic-auth
+  - cors
+  - expression
+  - key-auth
+  - log
+  - oauth2
+  - proxy
+  - rate-limit
+  - custom-logger
+pipelines:
+  commonPipeline:
+     apiEndpoints:
+       - common
+     policies:
+       - log: 
+          - action:
+              message: |
+                    Request received:
+                    Protocol: ${req.protocol}
+                    Method: ${req.method}
+                    Host: ${req.headers.host}
+                    URL: ${req.originalUrl}
+                    Headers: ${JSON.stringify(req.headers)}
+                    Timestamp: ${new Date().toISOString()}
+       - custom-logger:
+           - action:
+               message: 'Writing a log message to Winston logger'
+  productPipeline:
+    apiEndpoints:
+      - productApi
+    policies:
+    # So the request can be routed to mlutiple instances of express-gateway. Each instance maintains its own count.
+    # So if all the 4 requests have not gone to a single instance,you will not get the below message.
+    # To test this, in nginx config, in the upstream block, keep only 1 instance of express gateway
+      - rate-limit:
+           - action:
+              max: 4
+              windowMs: 60000
+              message: 'You have exceeded 4 requests/min'
+              rateLimitBy: ${req.headers.host}
+      - proxy:
+          - action:
+              serviceEndpoint: productService 
+              changeOrigin: true
+              timeout: 5000
+      
+
+  cartPipeline:
+    apiEndpoints:
+      - cartApi
+    policies:
+      - rate-limit:
+           - action:
+              max: 2
+              windowMs: 60000
+              message: 'You have exceeded 2 requests/min'
+              rateLimitBy: ${req.headers.host}
+      - proxy:
+          - action:
+              serviceEndpoint: cartService 
+              changeOrigin: true
+              timeout: 5000

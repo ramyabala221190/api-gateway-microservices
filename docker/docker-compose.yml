@@ -1,0 +1,75 @@
+services:
+    nginx:
+       build:
+          context: ../
+          dockerfile: nginx/Dockerfile
+       image: nginx:alpine
+       env_file: common.env
+       restart: always
+       volumes:
+         - nginx-logs-volume:/var/log/nginx/
+  
+    express-gateway-service-1:
+      image: my-express-gateway
+      env_file: common.env
+      build:
+           context: ../
+           dockerfile: MicroservicesAPIGateway/Dockerfile
+      restart: always
+      volumes:
+         - express-logs-volume:/var/log/express-gateway/
+      networks:
+         - elk-network
+
+    express-gateway-service-2:
+        extends:
+          service: express-gateway-service-1
+    
+    express-gateway-service-3:
+        extends:
+          service: express-gateway-service-1
+
+    filebeat:
+      restart: always
+      build:
+        context: ../
+        dockerfile: filebeat/Dockerfile
+      environment:
+         - strict.perms=false
+      volumes:
+         - nginx-logs-volume:/var/log/nginx/:ro
+         - express-logs-volume:/var/log/express-gateway/:ro
+      networks:
+         - elk-network
+
+volumes:
+  mongo-data:
+  nginx-logs-volume:
+  express-logs-volume:
+
+networks:
+   mynetwork-dev:
+     name: gateway-dev-network
+     driver: bridge
+   mynetwork-prod:
+     name: gateway-prod-network
+     driver: bridge
+   product-svcs-dev:
+     name: product-microsvcs-dev-network
+     external: true
+   product-svcs-prod:
+     name: product-microsvcs-prod-network
+     external: true
+   cart-svcs-dev:
+     name: cart-microsvcs-dev-network
+     external: true
+   cart-svcs-prod:
+     name: cart-microsvcs-prod-network
+     external: true
+   elk-network:
+      name: elk-network
+      external: true
+
+  # In this example, mongo-data is a named volume that ensures all data written 
+  # by the MongoDB container to /data/db (MongoDB's default data directory) is saved persistently 
+  # on the host system, even if the mongodb container is removed or recreated.
