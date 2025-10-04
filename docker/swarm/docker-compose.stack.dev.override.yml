@@ -1,0 +1,15 @@
+services:
+   nginx:
+     ports: 
+         - 8400:8400
+     env_file: ../environments/dev.env
+     networks:
+         - shared-swarm-net-dev
+
+   
+   express-gateway-service-1:
+      env_file: ../environments/dev.env
+      ports: 
+         - 8300
+      networks:
+         - shared-swarm-net-dev

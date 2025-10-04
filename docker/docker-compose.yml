@@ -4,30 +4,32 @@ services:
           context: ../
           dockerfile: nginx/Dockerfile
        image: nginx:alpine
-       env_file: common.env
+       env_file: environments/common.env
        restart: always
        volumes:
          - nginx-logs-volume:/var/log/nginx/
   
+  
     express-gateway-service-1:
-      image: my-express-gateway
-      env_file: common.env
+      image: dockerenthusiast1992/my-express-gateway
+      env_file: environments/common.env
       build:
            context: ../
            dockerfile: MicroservicesAPIGateway/Dockerfile
       restart: always
       volumes:
          - express-logs-volume:/var/log/express-gateway/
-      networks:
-         - elk-network
 
     express-gateway-service-2:
         extends:
           service: express-gateway-service-1
+        env_file: environments/common.env
+
     
     express-gateway-service-3:
         extends:
           service: express-gateway-service-1
+        env_file: environments/common.env
 
     filebeat:
       restart: always

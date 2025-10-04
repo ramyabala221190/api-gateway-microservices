@@ -1,42 +1,21 @@
 services:
   nginx:
-    env_file: environments/prod.env
-    build:
-        args: 
-          - targetENV=prod
+    env_file: ../environments/prod.env
     ports: 
          - 8500:8500
     volumes:
        - C:/Users/User/certificates/self-signed-custom-ca/nginx.key:/etc/nginx/ssl/nginx.key
        - C:/Users/User/certificates/self-signed-custom-ca/nginx.crt:/etc/nginx/ssl/nginx.crt
     networks:
-         - mynetwork-prod
-         - product-svcs-prod
-         - cart-svcs-prod
+         - shared-swarm-net-prod
 
   express-gateway-service-1:
-      env_file: environments/prod.env
-      build:
-        args: 
-          - targetENV=prod
+      env_file: ../environments/prod.env
       volumes:
         - C:/Users/User/certificates/self-signed-custom-ca/express.key:/var/lib/certs/express.key
         - C:/Users/User/certificates/self-signed-custom-ca/express.crt:/var/lib/certs/express.crt
         - C:/Users/User/certificates/self-signed-custom-ca/rootCA.crt:/var/lib/certs/rootCA.crt
-      expose: 
+      ports: 
          - 8305
       networks:
-         - mynetwork-prod
-         - product-svcs-prod
-         - cart-svcs-prod
-
-  express-gateway-service-2:
-       extends:
-          service: express-gateway-service-1
-       env_file: environments/prod.env
-
-
-  express-gateway-service-3:
-      extends:
-          service: express-gateway-service-1
-      env_file: environments/prod.env
+         - shared-swarm-net-prod

@@ -250,9 +250,9 @@ The hostname is nothing but the docker service name.
 
 ```
 upstream express_gateway_api{
-    server express-gateway-service-1:8300;
-    server express-gateway-service-2:8301;
-    server express-gateway-service-3:8302;
+    server express-gateway-service-1:${EXPRESS_GATEWAY_PORT};
+    server express-gateway-service-2:${EXPRESS_GATEWAY_PORT};
+    server express-gateway-service-3:${EXPRESS_GATEWAY_PORT};
 
 }
 
@@ -295,6 +295,22 @@ For this reason, we have created nginx_default.conf, where we have added the bel
 
 Express Gateway
 
+Observe the docker-compose.dev.override.yml and docker-compose.prod.override.yml.
+
+For express-gateway-service-1,express-gateway-service-2 and express-gateway-service-3, we have used expose
+instead of ports so that we are not exposing the service externally.
+The container port is alone accessible to other docker containers.
+We have not exposed the host ports so that it is not accessible externally in the browser.
+
+Also note that express-gateway-service-1,express-gateway-service-2 and express-gateway-service-3 have same container port.
+Since they are not going to be accessed directly in the browser, we need not bother about host port.
+
+But if they had to be accessed in the browser, the host ports need to be different for the 3.
+Container ports can remain the same.
+
+Since nginx is going to receive the client request, it alone has the host port specified.
+None of the microservices or express-gateway have the host port exposed.
+
 express-gateway will be used for routing the request from Nginx to the correct microservice. It also loadbalances the different instances
 of the product and cart microservice in dev and prod. 
 
@@ -302,15 +318,15 @@ of the product and cart microservice in dev and prod.
 serviceEndpoints:
   productService:
     urls:  
-     - http://product-node-1:${PRODUCT_SVCS_PORT_1}
-     - http://product-node-2:${PRODUCT_SVCS_PORT_2}
-     - http://product-node-3:${PRODUCT_SVCS_PORT_3}
+     - http://product-node-1:${PRODUCT_SVCS_PORT}
+     - http://product-node-2:${PRODUCT_SVCS_PORT}
+     - http://product-node-3:${PRODUCT_SVCS_PORT}
     
   cartService:
     urls: 
-     - http://cart-node-1:${CART_SVCS_PORT_1}
-     - http://cart-node-2:${CART_SVCS_PORT_2}
-     - http://cart-node-3:${CART_SVCS_PORT_3}
+     - http://cart-node-1:${CART_SVCS_PORT}
+     - http://cart-node-2:${CART_SVCS_PORT}
+     - http://cart-node-3:${CART_SVCS_PORT}
     
 ```
 
