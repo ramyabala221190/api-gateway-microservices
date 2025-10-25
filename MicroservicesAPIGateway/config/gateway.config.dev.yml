@@ -1,9 +1,6 @@
 http:
   port: "${EXPRESS_GATEWAY_PORT}"
 express:
-# admin:
-#   port: 9876
-#   host: localhost
 apiEndpoints:
   common:
     paths: "*"
@@ -16,15 +13,17 @@ apiEndpoints:
 serviceEndpoints:
   productService:
     urls:  
-     - http://product-node-1:${PRODUCT_SVCS_PORT}
-     - http://product-node-2:${PRODUCT_SVCS_PORT}
-     - http://product-node-3:${PRODUCT_SVCS_PORT}
+      -  http://product-node:${PRODUCT_SVCS_PORT}  # swarm setup. comment for compose up. uncomment below for compose up
+    #  - http://product-node-1:${PRODUCT_SVCS_PORT}
+    #  - http://product-node-2:${PRODUCT_SVCS_PORT}
+    #  - http://product-node-3:${PRODUCT_SVCS_PORT}
     
   cartService:
-    urls: 
-     - http://cart-node-1:${CART_SVCS_PORT}
-     - http://cart-node-2:${CART_SVCS_PORT}
-     - http://cart-node-3:${CART_SVCS_PORT}
+    urls:  
+      - http://cart-node:${CART_SVCS_PORT}    # swarm setup. comment for compose up. uncomment below for compose up
+    #  - http://cart-node-1:${CART_SVCS_PORT}
+    #  - http://cart-node-2:${CART_SVCS_PORT}
+    #  - http://cart-node-3:${CART_SVCS_PORT}
     
 policies:
   - basic-auth

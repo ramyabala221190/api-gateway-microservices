@@ -3,7 +3,7 @@ services:
        build:
           context: ../
           dockerfile: nginx/Dockerfile
-       image: nginx:alpine
+       image: dockerenthusiast1992/nginx:5
        env_file: environments/common.env
        restart: always
        volumes:
@@ -11,7 +11,7 @@ services:
   
   
     express-gateway-service-1:
-      image: dockerenthusiast1992/my-express-gateway
+      image: dockerenthusiast1992/my-express-gateway:5
       env_file: environments/common.env
       build:
            context: ../
@@ -33,6 +33,7 @@ services:
 
     filebeat:
       restart: always
+      image: dockerenthusiast1992/filebeat:5
       build:
         context: ../
         dockerfile: filebeat/Dockerfile

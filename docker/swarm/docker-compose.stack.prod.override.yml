@@ -2,20 +2,24 @@ services:
   nginx:
     env_file: ../environments/prod.env
     ports: 
-         - 8500:8500
+         - 4001:8500
     volumes:
        - C:/Users/User/certificates/self-signed-custom-ca/nginx.key:/etc/nginx/ssl/nginx.key
        - C:/Users/User/certificates/self-signed-custom-ca/nginx.crt:/etc/nginx/ssl/nginx.crt
     networks:
          - shared-swarm-net-prod
 
-  express-gateway-service-1:
+  express-gateway-service:
       env_file: ../environments/prod.env
       volumes:
         - C:/Users/User/certificates/self-signed-custom-ca/express.key:/var/lib/certs/express.key
         - C:/Users/User/certificates/self-signed-custom-ca/express.crt:/var/lib/certs/express.crt
         - C:/Users/User/certificates/self-signed-custom-ca/rootCA.crt:/var/lib/certs/rootCA.crt
       ports: 
-         - 8305
+         - 8305:8305
       networks:
+         - shared-swarm-net-prod
+   
+  filebeat:
+     networks:
          - shared-swarm-net-prod

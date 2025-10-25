@@ -6,9 +6,6 @@ https:
         key: ${keyPath}
         cert: ${certPath}
 express:
-# admin:
-#   port: 9876
-#   host: localhost
 apiEndpoints:
   common:
     paths: "*"

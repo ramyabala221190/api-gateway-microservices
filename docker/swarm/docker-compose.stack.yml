@@ -1,38 +1,40 @@
 services:
     nginx:
-       image: nginx:alpine
+       image: dockerenthusiast1992/nginx:5
        deploy:
+        restart_policy:
+          condition: on-failure
         placement:
-          constraints: [node.labels.role == gateway]
+          constraints: [node.labels.role == manager]
        env_file: ../environments/common.env
-       restart: always
        volumes:
          - nginx-logs-volume:/var/log/nginx/
   
-    express-gateway-service-1:
-      image: dockerenthusiast1992/my-express-gateway
+    express-gateway-service:
+      image: dockerenthusiast1992/my-express-gateway:5
       deploy:
         replicas: 3
+        restart_policy:
+          condition: on-failure
         placement:
-          constraints: [node.labels.role == gateway]
+          constraints: [node.labels.role == manager]
       env_file: ../environments/common.env
       volumes:
          - express-logs-volume:/var/log/express-gateway/
-      # networks:
-      #    - elk-network
 
-   #  filebeat:
-   #    restart: always
-   #    build:
-   #      context: ../
-   #      dockerfile: filebeat/Dockerfile
-   #    environment:
-   #       - strict.perms=false
-   #    volumes:
-   #       - nginx-logs-volume:/var/log/nginx/:ro
-   #       - express-logs-volume:/var/log/express-gateway/:ro
-   #    networks:
-   #       - elk-network
+    filebeat:
+      image: dockerenthusiast1992/filebeat:5
+      deploy:
+        restart_policy:
+          condition: on-failure
+        placement:
+          constraints: [node.labels.role == manager]
+      environment:
+         - strict.perms=false
+      volumes:
+         - nginx-logs-volume:/var/log/nginx/:ro
+         - express-logs-volume:/var/log/express-gateway/:ro
+
 
 volumes:
   mongo-data:
@@ -44,9 +46,6 @@ networks:
       external: true
    shared-swarm-net-prod:
       external: true
-   # elk-network:
-   #    name: elk-network
-   #    external: true
 
   # In this example, mongo-data is a named volume that ensures all data written 
   # by the MongoDB container to /data/db (MongoDB's default data directory) is saved persistently 
