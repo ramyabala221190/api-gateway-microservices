@@ -83,7 +83,7 @@ jobs:
               file: ./MicroservicesAPIGateway/Dockerfile  # this ensures the Dockerfile is located in the correct folder
               tags: ${{vars.DOCKERHUB_USERNAME}}/${{vars.APP_NAME}}:${{env.TAG}}
               build-args: |
-                  targetENV=${{ env.TAG }}
+                  targetENV=${{github.event.inputs.environment }}
 
           - name: Build docker image for nginx
             if: ${{ github.event.inputs.environment == 'dev' }}
@@ -94,7 +94,7 @@ jobs:
               file: ./nginx/Dockerfile  # this ensures the Dockerfile is located in the correct folder
               tags: ${{vars.DOCKERHUB_USERNAME}}/${{vars.APP_NAME}}:${{env.TAG}}
               build-args: |
-                  targetENV=${{ env.TAG }}
+                  targetENV=${{ github.event.inputs.environment }}
 
 
           # - name: Run using compose
