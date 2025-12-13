@@ -82,6 +82,8 @@ jobs:
               context: .   # this ensures the paths in the Dockerfile work as expected
               file: ./MicroservicesAPIGateway/Dockerfile  # this ensures the Dockerfile is located in the correct folder
               tags: ${{vars.DOCKERHUB_USERNAME}}/${{vars.APP_NAME}}:${{env.TAG}}
+              build-args: |
+                  targetENV=${{ env.TAG }}
 
           - name: Build docker image for nginx
             if: ${{ github.event.inputs.environment == 'dev' }}
@@ -91,6 +93,9 @@ jobs:
               context: .   # this ensures the paths in the Dockerfile work as expected
               file: ./nginx/Dockerfile  # this ensures the Dockerfile is located in the correct folder
               tags: ${{vars.DOCKERHUB_USERNAME}}/${{vars.APP_NAME}}:${{env.TAG}}
+              build-args: |
+                  targetENV=${{ env.TAG }}
+
 
           # - name: Run using compose
           # # this will create containers in the github runner and will destroy them once workflow ends. no containers are created in docker desktop
