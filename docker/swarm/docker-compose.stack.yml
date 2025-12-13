@@ -1,6 +1,6 @@
 services:
     nginx:
-       image: dockerenthusiast1992/nginx:5
+       image: ${DOCKERHUB_USER}/${APPNAME}-nginx:${TAG}
        deploy:
         restart_policy:
           condition: on-failure
@@ -8,10 +8,10 @@ services:
           constraints: [node.labels.role == manager]
        env_file: ../environments/common.env
        volumes:
-         - nginx-logs-volume:/var/log/nginx/
+         - nginx-logs-volume:/var/log/${APPNAME}-nginx/
   
     express-gateway-service:
-      image: dockerenthusiast1992/my-express-gateway:5
+      image: ${DOCKERHUB_USER}/${APPNAME}-express:${TAG}
       deploy:
         replicas: 3
         restart_policy:
@@ -20,10 +20,10 @@ services:
           constraints: [node.labels.role == manager]
       env_file: ../environments/common.env
       volumes:
-         - express-logs-volume:/var/log/express-gateway/
+         - express-logs-volume:/var/log/${APPNAME}-express/
 
     filebeat:
-      image: dockerenthusiast1992/filebeat:5
+      image: ${DOCKERHUB_USER}/${APPNAME}-filebeat:${TAG}
       deploy:
         restart_policy:
           condition: on-failure
@@ -32,8 +32,8 @@ services:
       environment:
          - strict.perms=false
       volumes:
-         - nginx-logs-volume:/var/log/nginx/:ro
-         - express-logs-volume:/var/log/express-gateway/:ro
+         - nginx-logs-volume:/var/log/${APPNAME}-nginx/:ro
+         - express-logs-volume:/var/log/${APPNAME}-express/:ro
 
 
 volumes:

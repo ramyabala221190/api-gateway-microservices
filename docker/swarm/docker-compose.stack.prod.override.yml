@@ -1,6 +1,6 @@
 services:
   nginx:
-    env_file: ../environments/prod.env
+    env_file: ../environments/${TARGETENV}.env
     ports: 
          - 4001:8500
     volumes:
@@ -10,7 +10,7 @@ services:
          - shared-swarm-net-prod
 
   express-gateway-service:
-      env_file: ../environments/prod.env
+      env_file: ../environments/${TARGETENV}.env
       volumes:
         - C:/Users/User/certificates/self-signed-custom-ca/express.key:/var/lib/certs/express.key
         - C:/Users/User/certificates/self-signed-custom-ca/express.crt:/var/lib/certs/express.crt

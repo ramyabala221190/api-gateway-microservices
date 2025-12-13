@@ -2,20 +2,20 @@ services:
    nginx:
      ports: 
          - 8400:8400
-     env_file: environments/dev.env
+     env_file: environments/${TARGETENV}.env
      build:
         args: 
-          - targetENV=dev  
+          - targetENV=${TARGETENV}  
      networks:
          - mynetwork-dev
          - product-svcs-dev
          - cart-svcs-dev
    
    express-gateway-service-1:
-      env_file: environments/dev.env
+      env_file: environments/${TARGETENV}.env
       build:
         args: 
-          - targetENV=dev  
+          - targetENV=${TARGETENV}  
       expose: 
          - 8300
       networks:
@@ -26,10 +26,10 @@ services:
    express-gateway-service-2:
        extends:
           service: express-gateway-service-1
-       env_file: environments/dev.env
+       env_file: environments/${TARGETENV}.env
      
    express-gateway-service-3:
        extends:
           service: express-gateway-service-1
-       env_file: environments/dev.env
+       env_file: environments/${TARGETENV}.env
 

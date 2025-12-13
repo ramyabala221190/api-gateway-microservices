@@ -1,6 +1,8 @@
 services:
     nginx:
-       image: ${DOCKERHUB_USER}/${APPNAME}-nginx:${TAG}
+       build:
+          context: ../
+          dockerfile: nginx/Dockerfile
        env_file: environments/common.env
        restart: always
        volumes:
@@ -8,8 +10,10 @@ services:
   
   
     express-gateway-service-1:
-      image: ${DOCKERHUB_USER}/${APPNAME}-express:${TAG}
       env_file: environments/common.env
+      build:
+           context: ../
+           dockerfile: MicroservicesAPIGateway/Dockerfile
       restart: always
       volumes:
          - express-logs-volume:/var/log/${APPNAME}-express/
@@ -17,12 +21,14 @@ services:
     express-gateway-service-2:
         extends:
           service: express-gateway-service-1
+        build: null
         env_file: environments/common.env
 
     
     express-gateway-service-3:
         extends:
           service: express-gateway-service-1
+        build: null
         env_file: environments/common.env
 
     # filebeat:
@@ -52,16 +58,16 @@ networks:
      name: gateway-prod-network
      driver: bridge
    product-svcs-dev:
-     name: product-microsvcs-dev-network
+     name: product-node-express-dev-network
      external: true
    product-svcs-prod:
-     name: product-microsvcs-prod-network
+     name: product-node-express-prod-network
      external: true
    cart-svcs-dev:
-     name: cart-microsvcs-dev-network
+     name: cart-node-express-dev-network
      external: true
    cart-svcs-prod:
-     name: cart-microsvcs-prod-network
+     name: cart-node-express-prod-network
      external: true
   #  elk-network:
   #     name: elk-network
