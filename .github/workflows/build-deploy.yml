@@ -102,27 +102,25 @@ jobs:
           #   run: |
           #     docker compose -p ${{vars.APP_NAME}}-${{github.event.inputs.environment}} -f docker/docker-compose.yml -f docker/docker-compose.${{github.event.inputs.environment}}.override.yml up -d --remove-orphans --no-build
           
-          # - name: Deploy to Azure VM
-          #   uses: appleboy/ssh-action@v1.0.3
-          #   # the action requires the parameters specified under with:
-          #   with:
-          #    host: ${{ secrets.AZURE_VM_IP }}   # asure ip
-          #    username: ${{ secrets.AZURE_VM_USER }} # aszure username
-          #    key: ${{ secrets.AZURE_VM_SSH_KEY }}  # your private key. your public key will be given to azure
-          #    script: |
-          #      cd /home/${{ secrets.AZURE_VM_USER }}/${{vars.APP_NAME}}
-          #      # pull the image in the azure vm
-          #      docker compose \
-          #      -p ${{vars.APP_NAME}}-${{ github.event.inputs.environment }} \
-          #      -f docker/docker-compose.yml \
-          #      -f docker/docker-compose.${{ github.event.inputs.environment }}.override.yml \
-          #       pull
-          #      # run the containers in the azure vm
-          #      docker compose \
-          #      -p ${{vars.APP_NAME}}-${{ github.event.inputs.environment }} \
-          #      -f docker/docker-compose.yml \
-          #      -f docker/docker-compose.${{ github.event.inputs.environment }}.override.yml \
-          #      up -d --remove-orphans --no-build
+          - name: Deploy to Azure VM
+            uses: appleboy/ssh-action@v1.0.3
+            # the action requires the parameters specified under with:
+            with:
+             host: ${{ secrets.AZURE_VM_IP }}   # asure ip
+             username: ${{ secrets.AZURE_VM_USER }} # aszure username
+             key: ${{ secrets.AZURE_VM_SSH_KEY }}  # your private key. your public key will be given to azure
+             script: |
+               cd /home/${{ secrets.AZURE_VM_USER }}/${{vars.APP_NAME}}
+               docker compose \
+               -p ${{vars.APP_NAME}}-${{ github.event.inputs.environment }} \
+               -f docker/docker-compose.yml \
+               -f docker/docker-compose.${{ github.event.inputs.environment }}.override.yml \
+                pull
+               docker compose \
+               -p ${{vars.APP_NAME}}-${{ github.event.inputs.environment }} \
+               -f docker/docker-compose.yml \
+               -f docker/docker-compose.${{ github.event.inputs.environment }}.override.yml \
+               up -d --remove-orphans --no-build
 
             
 
