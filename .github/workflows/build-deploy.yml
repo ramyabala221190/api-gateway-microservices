@@ -95,6 +95,16 @@ jobs:
               build-args: |
                   targetENV=${{ github.event.inputs.environment }}
 
+          - name: Build Docker image for filebeat
+          # executed only for dev
+            if: ${{ github.event.inputs.environment == 'dev' }}
+            uses: docker/build-push-action@v5
+            with:
+              push: true  # so that image is pushed to Dockerhub as well
+              context: .   # this ensures the paths in the Dockerfile work as expected
+              file: ./filebeat/Dockerfile  # this ensures the Dockerfile is located in the correct folder
+              tags: ${{vars.DOCKERHUB_USERNAME}}/${{vars.APP_NAME}}-filebeat:${{env.TAG}}
+
 
           # - name: Run using compose
           # # this will create containers in the github runner and will destroy them once workflow ends. no containers are created in docker desktop
