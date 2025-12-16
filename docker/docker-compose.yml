@@ -2,6 +2,9 @@ services:
     nginx:
        image: ${DOCKERHUB_USER}/${APPNAME}-nginx:${TAG}
        env_file: environments/common.env
+       environment:
+         - stdoutPath=/var/log/${APPNAME}-nginx/combined.log
+         - stderrPath=/var/log/${APPNAME}-nginx/error.log
        restart: always
        volumes:
          - nginx-logs-volume:/var/log/${APPNAME}-nginx/
@@ -10,6 +13,9 @@ services:
     express-gateway-service-1:
       image: ${DOCKERHUB_USER}/${APPNAME}-express:${TAG}
       env_file: environments/common.env
+      environment:
+         - stdoutPath=/var/log/${APPNAME}-express/combined.log
+         - stderrPath=/var/log/${APPNAME}-express/error.log
       restart: always
       volumes:
          - express-logs-volume:/var/log/${APPNAME}-express/
