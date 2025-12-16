@@ -107,7 +107,7 @@ jobs:
               host: ${{ secrets.AZURE_VM_IP }}
               username: ${{ secrets.AZURE_VM_USER }}
               key: ${{ secrets.AZURE_VM_SSH_KEY }}
-              source: "docker/*"
+              source: "docker/**"
               target: "/home/${{ secrets.AZURE_VM_USER }}/${{vars.APP_NAME}}/docker"
 
           - name: Deploy to Azure VM
@@ -118,7 +118,7 @@ jobs:
              username: ${{ secrets.AZURE_VM_USER }} # aszure username
              key: ${{ secrets.AZURE_VM_SSH_KEY }}  # your private key. your public key will be given to azure
              script: |
-               cd /home/${{ secrets.AZURE_VM_USER }}/${{vars.APP_NAME}}
+               cd /home/${{ secrets.AZURE_VM_USER }}/${{vars.APP_NAME}}/docker
                docker compose \
                -p ${{vars.APP_NAME}}-${{ github.event.inputs.environment }} \
                -f docker/docker-compose.yml \
