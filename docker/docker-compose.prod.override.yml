@@ -1,9 +1,6 @@
 services:
   nginx:
     env_file: environments/${TARGETENV}.env
-    build:
-        args: 
-          - targetENV=${TARGETENV}
     ports: 
          - 8500:8500
     volumes:
@@ -16,9 +13,6 @@ services:
 
   express-gateway-service-1:
       env_file: environments/${TARGETENV}.env
-      build:
-        args: 
-          - targetENV=${TARGETENV}
       volumes:
         - C:/Users/User/certificates/self-signed-custom-ca/express.key:/var/lib/certs/express.key
         - C:/Users/User/certificates/self-signed-custom-ca/express.crt:/var/lib/certs/express.crt

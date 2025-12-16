@@ -3,9 +3,6 @@ services:
      ports: 
          - 80:80
      env_file: environments/${TARGETENV}.env
-     build:
-        args: 
-          - targetENV=${TARGETENV}  
      networks:
          - mynetwork-dev
          - product-svcs-dev
@@ -13,9 +10,6 @@ services:
    
    express-gateway-service-1:
       env_file: environments/${TARGETENV}.env
-      build:
-        args: 
-          - targetENV=${TARGETENV}  
       expose: 
          - 8300
       networks:
