@@ -58,7 +58,7 @@ jobs:
           # we verify the value of the env variables
             run: |
               # env.var3 will be empty because its set at step level
-              echo "${{env.var1}}" "${{env.var2}}" "${{env.var3}}" "${{env.TAG}}"
+              echo "${{env.var1}}" "${{env.var2}}" "${{env.TAG}}"
               echo "${{github.event.inputs.environment}}"
                         
 
@@ -118,12 +118,20 @@ jobs:
              key: ${{ secrets.AZURE_VM_SSH_KEY }}  # your private key. your public key will be given to azure
              script: |
                cd /home/${{ secrets.AZURE_VM_USER }}/${{vars.APP_NAME}}
-               cat <<EOF > /home/${{ secrets.AZURE_VM_USER }}/${{vars.APP_NAME}}/docker/.env DOCKERHUB_USER=${{ vars.DOCKERHUB_USERNAME }} APPNAME=${{ vars.APP_NAME }} TAG=${{ env.TAG }} TARGETENV=${{ github.event.inputs.environment }} EOF
+               
+               cat <<EOF > /home/${{ secrets.AZURE_VM_USER }}/${{vars.APP_NAME}}/docker/.env 
+               DOCKERHUB_USER=${{ vars.DOCKERHUB_USERNAME }} 
+               APPNAME=${{ vars.APP_NAME }} 
+               TAG=${{ env.TAG }} 
+               TARGETENV=${{ github.event.inputs.environment }} 
+               EOF
+               
                docker compose \
                -p ${{vars.APP_NAME}}-${{ github.event.inputs.environment }} \
                -f docker/docker-compose.yml \
                -f docker/docker-compose.${{ github.event.inputs.environment }}.override.yml \
                 pull
+               
                docker compose \
                -p ${{vars.APP_NAME}}-${{ github.event.inputs.environment }} \
                -f docker/docker-compose.yml \
