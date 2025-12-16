@@ -101,7 +101,15 @@ jobs:
           # # this will create containers in the github runner and will destroy them once workflow ends. no containers are created in docker desktop
           #   run: |
           #     docker compose -p ${{vars.APP_NAME}}-${{github.event.inputs.environment}} -f docker/docker-compose.yml -f docker/docker-compose.${{github.event.inputs.environment}}.override.yml up -d --remove-orphans --no-build
-          
+          - name: Copy compose files to VM
+            uses: appleboy/scp-action@v0.1.7
+            with:
+              host: ${{ secrets.AZURE_VM_IP }}
+              username: ${{ secrets.AZURE_VM_USER }}
+              key: ${{ secrets.AZURE_VM_SSH_KEY }}
+              source: "docker/*"
+              target: "/home/${{ secrets.AZURE_VM_USER }}/${{vars.APP_NAME}}/docker"
+
           - name: Deploy to Azure VM
             uses: appleboy/ssh-action@v1.0.3
             # the action requires the parameters specified under with:
