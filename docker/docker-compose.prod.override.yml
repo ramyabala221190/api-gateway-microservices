@@ -7,8 +7,10 @@ services:
          - 8500:8500
          - 80:80
     volumes:
-      - certs:/certs
-      - certbot-webroot:/var/www/certbot
+       - /etc/letsencrypt/live/${AZURE_VM_DOMAIN}/fullchain.pem:/etc/nginx/ssl/fullchain.pem
+       - /etc/letsencrypt/live/${AZURE_VM_DOMAIN}:/etc/nginx/ssl/privkey.pem
+       - /etc/letsencrypt/options-ssl-nginx.conf:/etc/nginx/ssl/options-ssl-nginx.conf
+       - /etc/letsencrypt/ssl-dhparams.pem:/etc/nginx/ssl/ssl-dhparams.pem 
       #  - C:/Users/User/certificates/self-signed-custom-ca/nginx.key:/etc/nginx/ssl/nginx.key
       #  - C:/Users/User/certificates/self-signed-custom-ca/nginx.crt:/etc/nginx/ssl/nginx.crt
     networks:
@@ -40,19 +42,3 @@ services:
           service: express-gateway-service-1
       env_file: environments/${TARGETENV}.env
    
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - certs:/certs
-      - certs-work:/certs-work
-      - certs-logs:/certs-logs
-      - certbot-webroot:/var/www/certbot
-    command: >
-      certonly --webroot --webroot-path=/var/www/certbot
-      --config-dir /certs
-      --work-dir /certs-work
-      --logs-dir /certs-logs
-      -d ${AZURE_VM_DOMAIN}
-      --non-interactive
-      --agree-tos
-      --email ${CERTBOT_EMAIL}
