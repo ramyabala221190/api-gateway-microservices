@@ -8,7 +8,7 @@ services:
        restart: always
        volumes:
          - nginx-logs-volume:/var/log/${APPNAME}-nginx/
-         - /home/${VM_USER}/${APPNAME}/nginx.${TARGETENV}.conf:/etc/nginx/templates/default.conf.template
+         - /home/${VM_USER}/${APPNAME}/docker/nginx.${TARGETENV}.conf:/etc/nginx/templates/default.conf.template
   
   
     express-gateway-service-1:

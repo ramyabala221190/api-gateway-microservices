@@ -122,8 +122,17 @@ jobs:
               host: ${{ env.VM_IP }}
               username: ${{ env.VM_USER }}
               key: ${{ secrets.AZURE_VM_SSH_KEY }}
-              source: "docker/**,nginx/nginx.${{github.event.inputs.environment}}.conf"
+              source: "docker/**"
               target: "/home/${{ env.VM_USER }}/${{vars.APP_NAME}}"
+          
+          - name: Copy nginx config files to VM
+            uses: appleboy/scp-action@v0.1.7
+            with:
+              host: ${{ env.VM_IP }}
+              username: ${{ env.VM_USER }}
+              key: ${{ secrets.AZURE_VM_SSH_KEY }}
+              source: "nginx/nginx.${{github.event.inputs.environment}}.conf"
+              target: "/home/${{ env.VM_USER }}/${{vars.APP_NAME}}/docker/nginx.${{github.event.inputs.environment}}.conf"
 
           - name: Deploy to Azure VM
             uses: appleboy/ssh-action@v1.0.3
