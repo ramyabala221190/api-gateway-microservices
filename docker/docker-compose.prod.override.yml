@@ -1,8 +1,6 @@
 services:
   nginx:
     env_file: environments/${TARGETENV}.env
-    depends_on:
-          - certbot
     ports: 
          - 8500:8500
          - 80:80
