@@ -23,6 +23,9 @@ env:
 #  APPNAME: ${{vars.APP_NAME}}
  var1: This is workflow level env var accessible in the entire workflow
  TAG: ${{ github.run_id }}  # we are setting a workflow level env variable. It could also be job level
+ VM_IP: ${{secrets.AZURE_VM_DEV_IP}}
+ VM_USER: ${{secrets.AZURE_VM_DEV_USER}}
+ VM_DOMAIN: ${{secrets.AZURE_VM_DEV_DOMAIN}}
  # So that it can be accessed in the docker compose file.
 
 jobs:
@@ -52,6 +55,9 @@ jobs:
             run: |
              if [[ "${{ github.event.inputs.environment }}" == "prod" ]]; then
              echo "TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
+             echo "VM_IP=${{secrets.AZURE_VM_PROD_IP}}" >> $GITHUB_ENV
+             echo "VM_USER=${{secrets.AZURE_VM_PROD_USER}}" >> $GITHUB_ENV
+             echo "VM_DOMAIN=${{secrets.AZURE_VM_PROD_DOMAIN}}" >> $GITHUB_ENV
              fi
 
           - name: Access env variables
@@ -113,28 +119,28 @@ jobs:
           - name: Copy compose files to VM
             uses: appleboy/scp-action@v0.1.7
             with:
-              host: ${{ secrets.AZURE_VM_IP }}
-              username: ${{ secrets.AZURE_VM_USER }}
+              host: ${{ env.VM_IP }}
+              username: ${{ env.VM_USER }}
               key: ${{ secrets.AZURE_VM_SSH_KEY }}
               source: "docker/**"
-              target: "/home/${{ secrets.AZURE_VM_USER }}/${{vars.APP_NAME}}"
+              target: "/home/${{ env.VM_USER }}/${{vars.APP_NAME}}"
 
           - name: Deploy to Azure VM
             uses: appleboy/ssh-action@v1.0.3
             # the action requires the parameters specified under with:
             with:
-             host: ${{ secrets.AZURE_VM_IP }}   # asure ip
-             username: ${{ secrets.AZURE_VM_USER }} # aszure username
+             host: ${{ env.VM_IP }}   # asure ip
+             username: ${{ env.VM_USER }} # aszure username
              key: ${{ secrets.AZURE_VM_SSH_KEY }}  # your private key. your public key will be given to azure
              script: |
-               cd /home/${{ secrets.AZURE_VM_USER }}/${{vars.APP_NAME}}
+               cd /home/${{ env.VM_USER }}/${{vars.APP_NAME}}
                
-               cat <<EOF > /home/${{ secrets.AZURE_VM_USER }}/${{vars.APP_NAME}}/docker/.env 
+               cat <<EOF > /home/${{env.VM_USER }}/${{vars.APP_NAME}}/docker/.env 
                DOCKERHUB_USER=${{ vars.DOCKERHUB_USERNAME }} 
                APPNAME=${{ vars.APP_NAME }} 
                TAG=${{ env.TAG }} 
                TARGETENV=${{ github.event.inputs.environment }}
-               AZURE_VM_DOMAIN=${{secrets.AZURE_VM_DOMAIN}} 
+               AZURE_VM_DOMAIN=${{env.VM_DOMAIN}} 
                EOF
                
                docker compose \
