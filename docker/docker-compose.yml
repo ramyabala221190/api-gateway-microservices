@@ -5,6 +5,7 @@ services:
        environment:
          - stdoutPath=/var/log/${APPNAME}-nginx/combined.log
          - stderrPath=/var/log/${APPNAME}-nginx/error.log
+         - AZURE_VM_DOMAIN=${AZURE_VM_DOMAIN} # to access in conf file
        restart: always
        volumes:
          - nginx-logs-volume:/var/log/${APPNAME}-nginx/
