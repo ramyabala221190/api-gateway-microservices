@@ -53,3 +53,6 @@ services:
       --work-dir /certs-work
       --logs-dir /certs-logs
       -d ${AZURE_VM_DOMAIN}
+      --non-interactive
+      --agree-tos
+      --email ${CERTBOT_EMAIL}
