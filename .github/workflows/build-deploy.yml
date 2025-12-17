@@ -122,7 +122,7 @@ jobs:
               host: ${{ env.VM_IP }}
               username: ${{ env.VM_USER }}
               key: ${{ secrets.AZURE_VM_SSH_KEY }}
-              source: "docker/**"
+              source: "docker/**,nginx/nginx.${{github.event.inputs.environment}}.conf"
               target: "/home/${{ env.VM_USER }}/${{vars.APP_NAME}}"
 
           - name: Deploy to Azure VM
@@ -140,7 +140,8 @@ jobs:
                APPNAME=${{ vars.APP_NAME }} 
                TAG=${{ env.TAG }} 
                TARGETENV=${{ github.event.inputs.environment }}
-               AZURE_VM_DOMAIN=${{env.VM_DOMAIN}} 
+               AZURE_VM_DOMAIN=${{env.VM_DOMAIN}}
+               VM_USER=${{env.VM_USER}} 
                EOF
                
                docker compose \
