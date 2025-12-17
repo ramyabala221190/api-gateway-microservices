@@ -4,8 +4,10 @@ services:
     ports: 
          - 8500:8500
     volumes:
-       - C:/Users/User/certificates/self-signed-custom-ca/nginx.key:/etc/nginx/ssl/nginx.key
-       - C:/Users/User/certificates/self-signed-custom-ca/nginx.crt:/etc/nginx/ssl/nginx.crt
+      - certs:/certs
+      - certbot-webroot:/var/www/certbot
+      #  - C:/Users/User/certificates/self-signed-custom-ca/nginx.key:/etc/nginx/ssl/nginx.key
+      #  - C:/Users/User/certificates/self-signed-custom-ca/nginx.crt:/etc/nginx/ssl/nginx.crt
     networks:
          - mynetwork-prod
          - product-svcs-prod
@@ -13,10 +15,10 @@ services:
 
   express-gateway-service-1:
       env_file: environments/${TARGETENV}.env
-      volumes:
-        - C:/Users/User/certificates/self-signed-custom-ca/express.key:/var/lib/certs/express.key
-        - C:/Users/User/certificates/self-signed-custom-ca/express.crt:/var/lib/certs/express.crt
-        - C:/Users/User/certificates/self-signed-custom-ca/rootCA.crt:/var/lib/certs/rootCA.crt
+      # volumes:
+      #   - C:/Users/User/certificates/self-signed-custom-ca/express.key:/var/lib/certs/express.key
+      #   - C:/Users/User/certificates/self-signed-custom-ca/express.crt:/var/lib/certs/express.crt
+      #   - C:/Users/User/certificates/self-signed-custom-ca/rootCA.crt:/var/lib/certs/rootCA.crt
       expose: 
          - 8305
       networks:
@@ -34,3 +36,17 @@ services:
       extends:
           service: express-gateway-service-1
       env_file: environments/${TARGETENV}.env
+   
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - certs:/certs
+      - certs-work:/certs-work
+      - certs-logs:/certs-logs
+      - certbot-webroot:/var/www/certbot
+    command: >
+      certonly --webroot --webroot-path=/var/www/certbot
+      --config-dir /certs
+      --work-dir /certs-work
+      --logs-dir /certs-logs
+      -d ${AZURE_VM_DOMAIN}

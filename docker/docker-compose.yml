@@ -47,6 +47,10 @@ volumes:
   mongo-data:
   nginx-logs-volume:
   express-logs-volume:
+  certs:
+  certs-work:
+  certs-logs:
+  certbot-webroot:
 
 networks:
    mynetwork-dev:

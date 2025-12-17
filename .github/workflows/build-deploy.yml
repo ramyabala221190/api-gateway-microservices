@@ -133,7 +133,8 @@ jobs:
                DOCKERHUB_USER=${{ vars.DOCKERHUB_USERNAME }} 
                APPNAME=${{ vars.APP_NAME }} 
                TAG=${{ env.TAG }} 
-               TARGETENV=${{ github.event.inputs.environment }} 
+               TARGETENV=${{ github.event.inputs.environment }}
+               AZURE_VM_DOMAIN=${{secrets.AZURE_VM_DOMAIN}} 
                EOF
                
                docker compose \

@@ -1,10 +1,10 @@
 https:
   port: ${EXPRESS_GATEWAY_PORT}
   #hostname: microsvcs-express-gateway
-  tls:
-    "default":
-        key: ${keyPath}
-        cert: ${certPath}
+  # tls:
+  #   "default":
+  #       key: ${keyPath}
+  #       cert: ${certPath}
 express:
 apiEndpoints:
   common:
