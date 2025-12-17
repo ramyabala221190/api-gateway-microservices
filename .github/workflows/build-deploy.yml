@@ -131,8 +131,8 @@ jobs:
               host: ${{ env.VM_IP }}
               username: ${{ env.VM_USER }}
               key: ${{ secrets.AZURE_VM_SSH_KEY }}
-              source: "nginx/nginx.${{github.event.inputs.environment}}.conf"
-              target: "/home/${{ env.VM_USER }}/${{vars.APP_NAME}}/docker/nginx.${{github.event.inputs.environment}}.conf"
+              source: "nginx/*.conf"
+              target: "/home/${{ env.VM_USER }}/${{vars.APP_NAME}}/docker"
 
           - name: Deploy to Azure VM
             uses: appleboy/ssh-action@v1.0.3
