@@ -31,17 +31,17 @@ services:
           service: express-gateway-service-1
         env_file: environments/common.env
 
-    filebeat:
-      restart: always
-      image: ${DOCKERHUB_USER}/${APPNAME}-filebeat:${TAG}
-      environment:
-         - strict.perms=false
-         - APPNAME=${APPNAME}  # any env variables used in the filebeat.yml must be declared here
-      volumes:
-         - nginx-logs-volume:/var/log/${APPNAME}-nginx/:ro
-         - express-logs-volume:/var/log/${APPNAME}-express/:ro
-      networks:
-         - elk-network
+    # filebeat:
+    #   restart: always
+    #   image: ${DOCKERHUB_USER}/${APPNAME}-filebeat:${TAG}
+    #   environment:
+    #      - strict.perms=false
+    #      - APPNAME=${APPNAME}  # any env variables used in the filebeat.yml must be declared here
+    #   volumes:
+    #      - nginx-logs-volume:/var/log/${APPNAME}-nginx/:ro
+    #      - express-logs-volume:/var/log/${APPNAME}-express/:ro
+    #   networks:
+    #      - elk-network
 
 volumes:
   mongo-data:
@@ -71,9 +71,9 @@ networks:
    cart-svcs-prod:
      name: cart-node-express-prod-network
      external: true
-   elk-network:
-      name: elk-network
-      external: true
+  #  elk-network:
+  #     name: elk-network
+  #     external: true
 
   # In this example, mongo-data is a named volume that ensures all data written 
   # by the MongoDB container to /data/db (MongoDB's default data directory) is saved persistently 
