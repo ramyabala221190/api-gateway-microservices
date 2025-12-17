@@ -5,10 +5,10 @@ services:
          - 8500:8500
          - 80:80
     volumes:
-       - /etc/letsencrypt/live/${AZURE_VM_DOMAIN}/fullchain.pem:/etc/nginx/ssl/fullchain.pem
-       - /etc/letsencrypt/live/${AZURE_VM_DOMAIN}:/etc/nginx/ssl/privkey.pem
-       - /etc/letsencrypt/options-ssl-nginx.conf:/etc/nginx/ssl/options-ssl-nginx.conf
-       - /etc/letsencrypt/ssl-dhparams.pem:/etc/nginx/ssl/ssl-dhparams.pem 
+     - /etc/letsencrypt/live/${AZURE_VM_DOMAIN}:/etc/nginx/ssl:ro
+     - /etc/letsencrypt/options-ssl-nginx.conf:/etc/nginx/options-ssl-nginx.conf:ro
+     - /etc/letsencrypt/ssl-dhparams.pem:/etc/nginx/ssl-dhparams.pem:ro
+
       #  - C:/Users/User/certificates/self-signed-custom-ca/nginx.key:/etc/nginx/ssl/nginx.key
       #  - C:/Users/User/certificates/self-signed-custom-ca/nginx.crt:/etc/nginx/ssl/nginx.crt
     networks:
