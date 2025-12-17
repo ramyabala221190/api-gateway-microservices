@@ -1,5 +1,79 @@
 This is seperate repository for adding express-gateway and nginx configuration files.
 
+# Deployment strategy
+
+We are using GitHub actions to make CI CD to Azure VM possible.
+
+The .github/workflows/build-deploy.yml contains the workflow for building the project and deploying
+to the Azure VM.
+
+We have deployed all the 3 microservices and the ELK to the same VM to keep it simple.
+No docker swarm in use in this scenario.
+
+=>Build only the services that have Dockerfiles
+=>Build each microservice once, not per replica
+=>CI/CD should build → push → deploy, not rebuild on the server
+=>Let Docker Compose pull the images in the remote server.
+
+In the Github action, we are building images for only those docker services which use Dockerfile
+and pushing them to Dockerhub.
+Both express and nginx use Dockerfiles. So we are building docker images for these 2 services alone
+and pushing them to Dockerhub.
+The mongo services uses the inbuilt docker image. So no seperate building/pushing is required.
+Note that building and pushing for express and nginx is required when deploying to dev environment,
+followed by pulling those images in the VM.
+In prod environment, we just need to pull the already built and pushed images in the VM.
+
+
+So we are maintaining seperate docker-compose files for deployment and local run.
+The build field will be provided only in the docker-compose.local.yml and it will be omitted in the
+docker-compose.yml. 
+This is because for local run ,we need to build the image and run it in DockerDesktop.
+We use the same image for the parent and extended services as well. Seperate image will not be built for extended services.
+
+For deployment, we have a github action building and pushing the image. To pull the image in the VM,
+we just need the image name in the docker-compose.yml.
+
+Another important point to note is that the VM requires the compose and environment files in the VM
+to pull the image. So we have used the scp action to copy the docker folder and its contents
+to a dedicated folder in the vm.  Post this, we execute the "compose pull" and "compose up" 
+commands in the github action.
+
+```
+ - name: Copy compose files to VM
+            uses: appleboy/scp-action@v0.1.7
+            with:
+              host: ${{ secrets.AZURE_VM_IP }}
+              username: ${{ secrets.AZURE_VM_USER }}
+              key: ${{ secrets.AZURE_VM_SSH_KEY }}
+              source: "docker/**"
+              target: "/home/${{ secrets.AZURE_VM_USER }}/${{vars.APP_NAME}}"
+
+```
+
+For sending logs to ELK, we using winston to send logs to a path. Filebeat will read the logs from the file and send to logstash.
+ElasticSearch will do the indexing and send to Kibana for display.
+So the paths are extremely important.
+
+The env variables exposed throught github actions are accessible to the compose files in the github vm.
+As long as you the docker containers are running in the github vm, there is no issue.
+But when the compose files are copied to the VM, they no longer can access the environment variables exposed in the github actions.
+The compose files entirely rely on inline env variables/ env files.
+So we have to create .env file in the deploy step with the variables required to make further decisions as you see below:
+Compose will automatically pick the .env file. There is no need to specify it in the compose file.
+
+```
+  cat <<EOF > /home/${{ secrets.AZURE_VM_USER }}/${{vars.APP_NAME}}/docker/.env 
+               DOCKERHUB_USER=${{ vars.DOCKERHUB_USERNAME }} 
+               APPNAME=${{ vars.APP_NAME }} 
+               TAG=${{ env.TAG }} 
+               TARGETENV=${{ github.event.inputs.environment }} 
+               EOF
+
+```
+
+
+
 # Project Setup
 
 ```
@@ -29,10 +103,7 @@ Configuring yargs through package.json is deprecated and will be removed in a fu
 
 ```
 
-
-For logging, we have installed Winston and for loading environment variables from local.env when running locally, installed
-dotenv as a dev dependency.
-
+For logging, we have installed Winston and for loading environment variables from local.env when running locally, installed dotenv as a dev dependency.
 
 
 # Local Development
@@ -109,7 +180,7 @@ So any errors reported using the .error() in the app will get appended to the er
 Messages created via .debug or .info will be appended to the combined.log
 
 For local run, the files remain error.log and combined.log. With docker, the file paths change
-and is available in the common.env file.
+and is available in the compose file.
 
 ```
             filename:process.env.stderrPath || 'error.log',
@@ -254,7 +325,7 @@ Based on the request path, the express-gateway will decide which microservice th
 loadbalance between different instances of that microservice.
 
 
-NGINX
+## NGINX
 
 In nginx.dev.conf, we have defined the 3 instances of the express-gateway to which nginx will
 proxy the request. Nginx here acts as a loadbalancer for the 3 instances of express-gateway.
@@ -290,8 +361,8 @@ nginx logs available in the below locations in docker container. to include the 
 in logs, we need to make changes in the http {} of the conf
 
 ```
-  error_log /var/log/nginx/myerror.log debug;
-  access_log /var/log/nginx/myaccess.log upstream_log;
+   error_log ${stderrPath} debug;
+   access_log ${stdoutPath} upstream_log;
 
 ```
 
@@ -305,7 +376,7 @@ For this reason, we have created nginx_default.conf, where we have added the bel
 
 ```
 
-Express Gateway
+## Express Gateway
 
 Observe the docker-compose.dev.override.yml and docker-compose.prod.override.yml.
 
@@ -320,8 +391,31 @@ Since they are not going to be accessed directly in the browser, we need not bot
 But if they had to be accessed in the browser, the host ports need to be different for the 3.
 Container ports can remain the same.
 
+Since express-gateway-service-2 and 3 are extending 1, we need to understand what fields can be inherited and what cannot.
+
+Compose does inherit:
+image,
+build,
+environment (inline key‑value pairs),
+volumes
+ports
+networks
+command
+entrypoint
+
+But Compose does NOT inherit:
+env_file
+depends_on
+links
+secrets
+configs
+healthcheck
+restart
+deploy (in swarm mode)
+
+
 Since nginx is going to receive the client request, it alone has the host port specified.
-None of the microservices or express-gateway have the host port exposed.
+None of the microservices or express-gateway except elk and nginx have the host port exposed.
 
 express-gateway will be used for routing the request from Nginx to the correct microservice. It also loadbalances the different instances
 of the product and cart microservice in dev and prod. 
@@ -342,25 +436,6 @@ serviceEndpoints:
     
 ```
 
-## Seperate docker compose file for local and deployment
-
-### Important points related to deployment:
-=>Build only the services that have Dockerfiles
-=>Build each microservice once, not per replica
-=>CI/CD should build → push → deploy, not rebuild on the server
-=>Let Docker Compose pull the images in the remote server.
-
-We will keep seperate docker files for local development and deployment:
-docker-compose.yml for deployment and docker-compose.local.yml for local docker testing.
-
-For a service, we should not have both image and build fields.
-In docker-compose.yml, keep the image field, so that the already built and pushed image(using github actions)
-can be pulled on the remote server.
-Github actions/Jenkins must be used to build docker images only for docker services with Dockerfiles.
-For the remaining like mongo,elasticsearch etc, the images just needs to be pulled in the remote server
-using compose.
-
-In docker-compose.local.yml, keep the build field to build the image using the Dockerfile for local testing, and use the same image for the extended services as well.
 
 # SSL
 
@@ -898,5 +973,6 @@ Observe the way we are passing build arguments to be used in the Dockerfile usin
                   targetENV=${{ github.event.inputs.environment }}
 
 ```
+
 
 

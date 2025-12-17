@@ -9,6 +9,10 @@ filebeat:
            service_name: ${APPNAME}-express
         paths:
             - /var/log/${APPNAME}-express/*.log
+        multiline:
+          pattern: '^\['
+          negate: true
+          match: after
       
       - type: filestream
         id: ${APPNAME}-nginx  #Each filestream input must have a unique ID to allow tracking the state of files.
@@ -19,6 +23,10 @@ filebeat:
            service_name: ${APPNAME}-nginx
         paths:
             - /var/log/${APPNAME}-nginx/*.log
+        multiline:
+          pattern: '^\['
+          negate: true
+          match: after
 
 #The input in this example harvests all files in the path /var/log/nginx/*.log,
 # which means that Filebeat will harvest all files in the directory /var/log/ that end with .log
@@ -30,19 +38,13 @@ setup:
    kibana:
       host: "kibana:5601"
 
-output:
-  logstash:
+output.logstash:
       hosts: 'logstash:5001'
 
 monitoring:
   enabled: true
   elasticsearch:
     hosts: ["http://elasticsearch:9200"]
-
-multiline:
-  pattern: '^\['
-  negate: true
-  match: after
 
 exclude_files: ['*.gz', '*.tmp']
 

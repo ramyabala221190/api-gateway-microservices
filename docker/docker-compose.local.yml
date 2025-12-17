@@ -6,6 +6,9 @@ services:
           args: 
             - targetENV=${TARGETENV}  
        env_file: environments/common.env
+       environment:
+         - stdoutPath=/var/log/${APPNAME}-nginx/combined.log
+         - stderrPath=/var/log/${APPNAME}-nginx/error.log
        restart: always
        volumes:
          - nginx-logs-volume:/var/log/${APPNAME}-nginx/
@@ -13,6 +16,9 @@ services:
   
     express-gateway-service-1:
       env_file: environments/common.env
+      environment:
+         - stdoutPath=/var/log/${APPNAME}-express/combined.log
+         - stderrPath=/var/log/${APPNAME}-express/error.log
       build:
            context: ../
            dockerfile: MicroservicesAPIGateway/Dockerfile
@@ -25,14 +31,12 @@ services:
     express-gateway-service-2:
         extends:
           service: express-gateway-service-1
-        build: null
         env_file: environments/common.env
 
     
     express-gateway-service-3:
         extends:
           service: express-gateway-service-1
-        build: null
         env_file: environments/common.env
 
     # filebeat:
