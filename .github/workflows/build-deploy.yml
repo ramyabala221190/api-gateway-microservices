@@ -133,6 +133,7 @@ jobs:
               key: ${{ secrets.AZURE_VM_SSH_KEY }}
               source: "nginx/*.conf"
               target: "/home/${{ env.VM_USER }}/${{vars.APP_NAME}}/docker"
+              strip_components: 1
 
           - name: Deploy to Azure VM
             uses: appleboy/ssh-action@v1.0.3
