@@ -12,9 +12,11 @@ services:
        restart: always
        volumes:
          - nginx-logs-volume:/var/log/${APPNAME}-nginx/
+         - ../nginx/nginx.${TARGETENV}.conf:/etc/nginx/templates/default.conf.template
+
   
   
-    express-gateway-service-1:
+    express-gateway-service:
       env_file: environments/common.env
       environment:
          - stdoutPath=/var/log/${APPNAME}-express/combined.log
@@ -27,17 +29,6 @@ services:
       restart: always
       volumes:
          - express-logs-volume:/var/log/${APPNAME}-express/
-
-    express-gateway-service-2:
-        extends:
-          service: express-gateway-service-1
-        env_file: environments/common.env
-
-    
-    express-gateway-service-3:
-        extends:
-          service: express-gateway-service-1
-        env_file: environments/common.env
 
     # filebeat:
     #   restart: always

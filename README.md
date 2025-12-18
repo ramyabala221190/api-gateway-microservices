@@ -298,6 +298,64 @@ docker tag, dockerhub username etc. Based on whether environment is dev/prod, th
 
 # Docker
 
+## 🧩 How environment variables actually work in Docker
+
+### 1. **Environment variables are available *inside the running container’s process environment***  
+A file inside the container (like an Nginx template, a Node.js script, a shell script, etc.) can access an environment variable **only if that variable exists in the container’s environment at runtime**.
+
+### 2. **How do environment variables get into the container?**  
+They can come from several sources:
+
+| Source | Does it make the variable available inside the container? |
+|--------|-----------------------------------------------------------|
+| `environment:` in `docker-compose.yml` | ✅ Yes |
+| `env_file:` in `docker-compose.yml` | ✅ Yes |
+| `docker run -e VAR=value` | ✅ Yes |
+| `docker run --env-file file.env` | ✅ Yes |
+| `ENV VAR=value` in Dockerfile | ✅ Yes (but baked into the image) |
+| Variables defined only in your host shell | ❌ No, unless passed explicitly |
+
+So **environment variables are NOT limited to only `environment:` or `env_file:`**.  
+They just need to be part of the container’s environment when it starts.
+
+### 3. **Files inside the container cannot magically read host environment variables**  
+A file like:
+
+- `/etc/nginx/templates/default.conf.template`
+- `/usr/src/app/config.js`
+- `/app/.env` (unless you copy it)
+- Any script inside the container
+
+…can only access variables that Docker injected into the container environment.
+
+### 4. **Template engines (like envsubst, Nginx templates, etc.) only see variables in the container environment**  
+If you’re using:
+
+- `envsubst`
+- Nginx’s `template` feature
+- A Node.js script reading `process.env`
+- A shell script reading `$VAR`
+
+They all rely on the container’s environment.
+
+If the variable wasn’t passed via:
+
+- `environment:`
+- `env_file:`
+- `docker run -e`
+- `ENV` in Dockerfile
+
+…it simply won’t exist.
+
+---
+
+## 🧠 The key rule  
+**A variable is accessible only if it exists in the container’s environment at runtime.**  
+How it got there doesn’t matter — but it must be injected by Docker.
+
+---
+
+If you want, I can walk you through how this applies to your Nginx + Certbot + runtime templating setup, since that’s where these nuances really matter.
 Used cross-env npm package for local docker builds
 cross-env package helps to pass environment varibles in the npm script
 If we pass using "set", compose file is unable to detect it.
