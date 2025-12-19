@@ -9,9 +9,6 @@ services:
     - /etc/letsencrypt/archive/${AZURE_VM_DOMAIN}:/etc/nginx/ssl/archive/${AZURE_VM_DOMAIN}:ro    
     - /etc/letsencrypt/options-ssl-nginx.conf:/etc/nginx/options-ssl-nginx.conf:ro 
     - /etc/letsencrypt/ssl-dhparams.pem:/etc/nginx/ssl-dhparams.pem:ro
-
-      #  - C:/Users/User/certificates/self-signed-custom-ca/nginx.key:/etc/nginx/ssl/nginx.key
-      #  - C:/Users/User/certificates/self-signed-custom-ca/nginx.crt:/etc/nginx/ssl/nginx.crt
     networks:
          - mynetwork-prod
          - product-svcs-prod
@@ -19,10 +16,6 @@ services:
 
   express-gateway-service:
       env_file: environments/${TARGETENV}.env
-      # volumes:
-      #   - C:/Users/User/certificates/self-signed-custom-ca/express.key:/var/lib/certs/express.key
-      #   - C:/Users/User/certificates/self-signed-custom-ca/express.crt:/var/lib/certs/express.crt
-      #   - C:/Users/User/certificates/self-signed-custom-ca/rootCA.crt:/var/lib/certs/rootCA.crt
       expose: 
          - 8305
       networks:
