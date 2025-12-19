@@ -18,9 +18,6 @@ on:
       required: false
 
 env:
-#  DOCKERHUB_USER: ${{vars.DOCKERHUB_USERNAME}}
-#  TARGETENV: ${{ github.event.inputs.environment }}
-#  APPNAME: ${{vars.APP_NAME}}
  var1: This is workflow level env var accessible in the entire workflow
  TAG: ${{ github.run_id }}  # we are setting a workflow level env variable. It could also be job level
  VM_IP: ${{secrets.AZURE_VM_DEV_IP}}

@@ -1,6 +1,8 @@
 This is seperate repository for adding express-gateway and nginx configuration files.
 
 # Deployment strategy
+Deploy elk before other microservices because the latter depends on the former.
+Let the former keep running.
 
 We are using GitHub actions to make CI CD to Azure VM possible.
 
