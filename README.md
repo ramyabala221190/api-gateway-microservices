@@ -1,5 +1,6 @@
 This is seperate repository for adding express-gateway and nginx configuration files.
 
+
 # Deployment strategy
 Deploy elk before other microservices because the latter depends on the former.
 Let the former keep running.
@@ -15,7 +16,7 @@ No docker swarm in use in this scenario.
 =>Build only the services that have Dockerfiles
 =>Build each microservice once, not per replica
 =>CI/CD should build → push → deploy, not rebuild on the server
-=>Let Docker Compose pull the images in the remote server.
+=>Let Docker Compose pull the images in the remote server and run them
 
 In the Github action, we are building images for only those docker services which use Dockerfile
 and pushing them to Dockerhub.
@@ -31,13 +32,13 @@ So we are maintaining seperate docker-compose files for deployment and local run
 The build field will be provided only in the docker-compose.local.yml and it will be omitted in the
 docker-compose.yml. 
 This is because for local run ,we need to build the image and run it in DockerDesktop.
-We use the same image for the parent and extended services as well. Seperate image will not be built for extended services.
 
 For deployment, we have a github action building and pushing the image. To pull the image in the VM,
 we just need the image name in the docker-compose.yml.
 
 Another important point to note is that the VM requires the compose and environment files in the VM
-to pull the image. So we have used the scp action to copy the docker folder and its contents
+to pull the image. It also requires the nginx config files for dynamic injection of config file based on
+deployment environment. So we have used the scp action to copy the docker folder and its contents
 to a dedicated folder in the vm.  Post this, we execute the "compose pull" and "compose up" 
 commands in the github action.
 
@@ -74,6 +75,41 @@ Compose will automatically pick the .env file. There is no need to specify it in
 
 ```
 
+# application flow
+
+client <----> nginx <---> express-gateway <----> cart/product microservice <---> mongodb
+
+Here nginx acts a reverse proxy and load balances multiple instances of express-gateway
+Express-gateway is for routing requests to the correct microservice and also load balancing between the different instances of
+the cart and product microservice.
+Note that the microservices will commmunicate with each other via the express-gateway.
+
+nginx acts as edge gateway and express-gateway acts as api gateway
+
+### 🧭 API Gateway vs Edge Gateway
+
+| Feature                  | **API Gateway**                                         | **Edge Gateway**                                         |
+|--------------------------|---------------------------------------------------------|----------------------------------------------------------|
+| **Primary Role**         | Manages API traffic between clients and services        | Manages all traffic entering the network or cluster      |
+| **Scope**                | Focused on APIs and microservices                       | Broader scope: APIs, web apps, static content, etc.      |
+| **Location**             | Sits between client and backend APIs                    | Sits at the network edge, often before API gateway       |
+| **Functions**            | Authentication, rate limiting, routing, caching         | SSL termination, load balancing, firewall, DDoS protection |
+| **Protocols**            | Mostly HTTP/HTTPS, REST, GraphQL                        | Supports HTTP, TCP, UDP, TLS, and more                   |
+| **Examples**             | Kong, Express Gateway, Apigee, AWS API Gateway          | NGINX, Envoy, Cloudflare Gateway, NGINX Gateway Fabric   |
+| **Use Case**             | API management and developer control                    | Network-level security and traffic control               |
+
+---
+
+### 🧠 How They Work Together
+
+In many setups, **edge gateways and API gateways are layered**:
+
+```
+Client → Edge Gateway (NGINX) → API Gateway (Express Gateway) → Microservices
+```
+
+- **Edge Gateway** handles TLS, load balancing, and basic routing.
+- **API Gateway** enforces API-specific policies like JWT auth, quotas, and versioning.
 
 
 # Project Setup
@@ -300,6 +336,49 @@ docker tag, dockerhub username etc. Based on whether environment is dev/prod, th
 
 # Docker
 
+Lets understand the docker compose files.
+
+In the docker folder, we have a compose file for deployment and local docker container run :
+docker-compose.local.yml and docker-compose.yml.
+The override files are common to both.
+
+In docker-compose.local.yml, we do not provide the image, just the build field to build the docker
+image using the Dockerfile.
+
+In docker-compose.yml, we have just provided the image name to be pulled from Dockerhub from the target
+server. The images will be pre-built using Github actions docker/build-push-action@v5
+
+We need to have 3 instances of the express-gateway-server. Instead of providing 3 duplicates of the
+same service within the compose file, we just define 1 service with the name:express-gateway-service.
+
+When pulling the image and running the container, we provide the "--scale" to create multiple instances of the provided service.
+
+"--scale express-gateway-service=3" will create 3 instances of the express-gateway-service
+
+Below is an example for local run:
+
+```
+ "docker-local-dev-up": "cross-env TARGETENV=dev docker compose --env-file docker/environments/local.env -p gateway-dev -f docker/docker-compose.local.yml -f docker/docker-compose.dev.override.yml up -d --remove-orphans --no-build --scale express-gateway-service=3",
+```
+Same approach used for deployment as well:
+
+```
+docker compose \
+               -p ${{vars.APP_NAME}}-${{ github.event.inputs.environment }} \
+               -f docker/docker-compose.yml \
+               -f docker/docker-compose.${{ github.event.inputs.environment }}.override.yml \
+               up -d --remove-orphans --no-build \
+               --scale express-gateway-service=3
+```
+
+We always create the docker image once when deploying to dev environment and pull it from the VM for dev and prod environments for creating
+the containers.
+
+Also observe the usage of expose: and ports: . The ports: field is only used for nginx because it needs to be accessed in the browser.
+The expose: field is used for the express-gateway-service because we need to only expose to other services in the network and not to the 
+internet.
+
+
 ## 🧩 How environment variables actually work in Docker
 
 ### 1. **Environment variables are available *inside the running container’s process environment***  
@@ -316,6 +395,10 @@ They can come from several sources:
 | `docker run --env-file file.env` | ✅ Yes |
 | `ENV VAR=value` in Dockerfile | ✅ Yes (but baked into the image) |
 | Variables defined only in your host shell | ❌ No, unless passed explicitly |
+
+By convention, Docker Compose automatically looks for a file named .env in the same directory as your docker-compose.yml (or compose.yaml).
+If found, variables from this file are loaded automatically.
+You do not need to explicitly declare it with env_file: in the service definition or pass --env-file on the CLI.
 
 So **environment variables are NOT limited to only `environment:` or `env_file:`**.  
 They just need to be part of the container’s environment when it starts.
@@ -355,11 +438,50 @@ If the variable wasn’t passed via:
 **A variable is accessible only if it exists in the container’s environment at runtime.**  
 How it got there doesn’t matter — but it must be injected by Docker.
 
----
+.env → used for Compose file substitution.
 
-If you want, I can walk you through how this applies to your Nginx + Certbot + runtime templating setup, since that’s where these nuances really matter.
+environment: or env_file: or --env-file is used for container runtime environment.
+
+So any environment variables exposed from Github actions, are added to the .env file in the same folder as docker-compose in the VM.
+This ensures the compose file picks them up but they will not be available in the container.
+```
+ cat <<EOF > /home/${{env.VM_USER }}/${{vars.APP_NAME}}/docker/.env 
+               DOCKERHUB_USER=${{ vars.DOCKERHUB_USERNAME }} 
+               APPNAME=${{ vars.APP_NAME }} 
+               TAG=${{ env.TAG }} 
+               TARGETENV=${{ github.event.inputs.environment }}
+               AZURE_VM_DOMAIN=${{env.VM_DOMAIN}}
+               VM_USER=${{env.VM_USER}} 
+               EOF
+
+
+```
+
+To make them available to the files in the container, we need to re-declare them in the environment field of the service.
+
+```
+ nginx:
+       image: ${DOCKERHUB_USER}/${APPNAME}-nginx:${TAG}
+       env_file: environments/common.env
+       environment:
+         - stdoutPath=/var/log/${APPNAME}-nginx/combined.log
+         - stderrPath=/var/log/${APPNAME}-nginx/error.log
+         - AZURE_VM_DOMAIN=${AZURE_VM_DOMAIN} # exposed from github actions but must be declared here to access in conf file
+       restart: always
+       volumes:
+         - nginx-logs-volume:/var/log/${APPNAME}-nginx/
+         - /home/${VM_USER}/${APPNAME}/docker/nginx.${TARGETENV}.conf:/etc/nginx/templates/default.conf.template
+
+```
+
+So there is difference between the variables in .env file vs in environment:, --env-file and env_file.
+The last 3 will be available in the container runtime. The former will be available only to the compose file.
+So it needs to be re-declared in the environment: field.
+
+-------------------------------------------------------------------------------------------------------------------
+
 Used cross-env npm package for local docker builds
-cross-env package helps to pass environment varibles in the npm script
+cross-env package helps to pass environment varibles in the npm script.
 If we pass using "set", compose file is unable to detect it.
 So go for cross-env
 
@@ -368,9 +490,9 @@ We use the same image to bring the dev and prod containers up. Below are the com
 
 ```
 
- "docker-local-dev-build": "cross-env TARGETENV=dev docker compose --env-file docker/environments/local.env  -p gateway-dev -f docker/docker-compose.local.yml -f docker/docker-compose.dev.override.yml  build --no-cache",
-    "docker-local-dev-up": "cross-env TARGETENV=dev docker compose --env-file docker/environments/local.env -p gateway-dev -f docker/docker-compose.local.yml -f docker/docker-compose.dev.override.yml up -d --remove-orphans --no-build",
-    "docker-local-prod-up": "cross-env TARGETENV=prod docker compose --env-file docker/environments/local.env -p gateway-prod -f docker/docker-compose.local.yml -f docker/docker-compose.prod.override.yml up -d --remove-orphans --no-build"
+"docker-local-dev-build": "cross-env TARGETENV=dev docker compose --env-file docker/environments/local.env  -p gateway-dev -f docker docker-compose.local.yml -f docker/docker-compose.dev.override.yml  build --no-cache",
+"docker-local-dev-up": "cross-env TARGETENV=dev docker compose --env-file docker/environments/local.env -p gateway-dev -f docker/docker-compose.local.yml -f docker/docker-compose.dev.override.yml up -d --remove-orphans --no-build --scale express-gateway-service=3",
+"docker-local-prod-up": "cross-env TARGETENV=prod docker compose --env-file docker/environments/local.env -p gateway-prod -f docker/docker-compose.local.yml -f docker/docker-compose.prod.override.yml up -d --remove-orphans --no-build"
 
 ```
 
@@ -378,25 +500,32 @@ There is no need for giving container names because docker assigns a name based 
 
 When using docker, we will combining nginx and express-gateway
 
+---------------------------------------------------------------------------------------------------------------------------
+
+## Application flow
+
 Client(browser) will send requests to nginx. Nginx will loadbalance between 3 express-gateway instances.
 The express-gateway instance to which the request is routed, will loadbalance between 3 instances of the cart and
 product microservice respectively. We have 3 instances of each microservices.
 Based on the request path, the express-gateway will decide which microservice the request needs to be routed to and will also
 loadbalance between different instances of that microservice.
+Its important to note that any communication between the microservices has to happen via  express-gateway and not nginx.
+
+Nginx only receives the client requests and forwards them to the express-gateway. The express-gateway will forward the request
+to the respective microservice. The microservice will communicate with other microservices via the express-gateway.
+
+In production, nginx will use ssl certificates to run on https connection since it is exposed to the internet. The microservices and express-gateway are not exposed to the internet. So there is no need for ssl certificates for these.
 
 
 ## NGINX
 
-In nginx.dev.conf, we have defined the 3 instances of the express-gateway to which nginx will
-proxy the request. Nginx here acts as a loadbalancer for the 3 instances of express-gateway.
-The hostname is nothing but the docker service name.
+In nginx.dev.conf, we have defined docker service name of the express-gateway to which nginx will
+proxy the request. Nginx here acts as a loadbalancer for the 3 instances of express-gateway. The 3 replicas of the container will be
+created only when images are pulled and containers are created.
 
 ```
 upstream express_gateway_api{
-    server express-gateway-service-1:${EXPRESS_GATEWAY_PORT};
-    server express-gateway-service-2:${EXPRESS_GATEWAY_PORT};
-    server express-gateway-service-3:${EXPRESS_GATEWAY_PORT};
-
+    server express-gateway-service:${EXPRESS_GATEWAY_PORT};
 }
 
 ```
@@ -436,68 +565,69 @@ For this reason, we have created nginx_default.conf, where we have added the bel
 
 ```
 
+Obseve the volumes defined. Winston stores the logs in /var/log/${APPNAME}-nginx/. We are making it available to the 
+nginx-logs-volume. Filebeat will access the same volume to send the logs to logstash. The 2nd volume is a bind moumd to pass the nginx conf
+file to etc/nginx/templates/default.conf.template based on the environment.
+So its necessary that we copy the nginx conf files to the server.
+
+```
+ volumes:
+         - nginx-logs-volume:/var/log/${APPNAME}-nginx/
+         - /home/${VM_USER}/${APPNAME}/docker/nginx.${TARGETENV}.conf:/etc/nginx/templates/default.conf.template
+```
+
 ## Express Gateway
 
 Observe the docker-compose.dev.override.yml and docker-compose.prod.override.yml.
 
-For express-gateway-service-1,express-gateway-service-2 and express-gateway-service-3, we have used expose
+For express-gateway-service, we have used expose
 instead of ports so that we are not exposing the service externally.
 The container port is alone accessible to other docker containers.
 We have not exposed the host ports so that it is not accessible externally in the browser.
-
-Also note that express-gateway-service-1,express-gateway-service-2 and express-gateway-service-3 have same container port.
 Since they are not going to be accessed directly in the browser, we need not bother about host port.
-
-But if they had to be accessed in the browser, the host ports need to be different for the 3.
-Container ports can remain the same.
-
-Since express-gateway-service-2 and 3 are extending 1, we need to understand what fields can be inherited and what cannot.
-
-Compose does inherit:
-image,
-build,
-environment (inline key‑value pairs),
-volumes
-ports
-networks
-command
-entrypoint
-
-But Compose does NOT inherit:
-env_file
-depends_on
-links
-secrets
-configs
-healthcheck
-restart
-deploy (in swarm mode)
+Container ports can remain the same for multiple replicas of the express-gateway-service containers when images are pulled.
 
 
 Since nginx is going to receive the client request, it alone has the host port specified.
-None of the microservices or express-gateway except elk and nginx have the host port exposed.
+None of the microservices or express-gateway or elk, except nginx have the host port exposed.
+
+### 🧠 When to Use expose
+
+- Microservices architecture where docker services talk to each other internally.
+- You want to keep services private and secure.
+
 
 express-gateway will be used for routing the request from Nginx to the correct microservice. It also loadbalances the different instances
-of the product and cart microservice in dev and prod. 
+of the product and cart microservice in dev and prod.  We have provided the docker service name for the cart and product express apps
+below.
 
 ```
 serviceEndpoints:
   productService:
     urls:  
-     - http://product-node-1:${PRODUCT_SVCS_PORT}
-     - http://product-node-2:${PRODUCT_SVCS_PORT}
-     - http://product-node-3:${PRODUCT_SVCS_PORT}
+     - http://product-node-:${PRODUCT_SVCS_PORT}
     
   cartService:
     urls: 
-     - http://cart-node-1:${CART_SVCS_PORT}
-     - http://cart-node-2:${CART_SVCS_PORT}
-     - http://cart-node-3:${CART_SVCS_PORT}
+     - http://cart-node-:${CART_SVCS_PORT}
     
 ```
 
+Observe the volumes:
+
+So winston will store the app logs in the path: /var/log/${APPNAME}-express/
+The logs will be available in the volume. Filebeat will also have access to the volume to send the logs
+to logstash.
+
+```
+ volumes:
+         - express-logs-volume:/var/log/${APPNAME}-express/
+
+```
 
 # SSL
+
+SSL is not required for express-gateway unless 
 
 For express-gateway, we have a seperate config file for prod, where we make use of ssl: gateway.config.prod.yml
 
@@ -754,23 +884,23 @@ observe the service_name field added. This field will be used in the elk project
 to differentiate between the logs of different microservices and gateways.
 
 ```
-  fields:
-           event.dataset: express-gateway
-           service_name: express-gateway
+   fields:
+           event.dataset: ${APPNAME}-express
+           service_name: ${APPNAME}-express
 
    fields:
-           event.dataset: nginx-gateway
-           service_name: nginx-gateway
+           event.dataset: ${APPNAME}-nginx
+           service_name: ${APPNAME}-nginx
 ```
 Filebeat picks up log messages from the location specified in the path field and sends to logstash
 *.log ensures that both combined.log and error.log are picked.
 
 ```
-paths:
-            - /var/log/express-gateway/*.log
+ paths:
+            - /var/log/${APPNAME}-express/*.log
 
  paths:
-            - /var/log/nginx/*.log
+            - /var/log/${APPNAME}-nginx/*.log
 
 
 ```
@@ -917,12 +1047,10 @@ They can be accessed using the syntax ${{env.variable_name}}
 
 ```
 env:
- # github secrets and vars are only accessible within workflow. To access it within compose/other files, expose it as env variable
  DOCKERHUB_USER: ${{vars.DOCKERHUB_USERNAME}}
  APPNAME: ${{vars.APP_NAME}}
 ```
 
-We have then accessed them in docker-compose.yml file
 
 Note that just running "docker compose up" will create containers within the Github runner and not
 in docker desktop. You can create containers in docker desktop this way.
