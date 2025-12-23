@@ -9,8 +9,6 @@ services:
    
    express-gateway-service:
       env_file: ../docker/environments/${TARGETENV}.env
-      ports: 
-        - 8300:8300
       networks:
          - shared-swarm-net-dev
     

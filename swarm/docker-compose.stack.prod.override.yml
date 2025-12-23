@@ -15,8 +15,6 @@ services:
       #   - C:/Users/User/certificates/self-signed-custom-ca/express.key:/var/lib/certs/express.key
       #   - C:/Users/User/certificates/self-signed-custom-ca/express.crt:/var/lib/certs/express.crt
       #   - C:/Users/User/certificates/self-signed-custom-ca/rootCA.crt:/var/lib/certs/rootCA.crt
-      ports: 
-         - 8305:8305
       networks:
          - shared-swarm-net-prod
    
