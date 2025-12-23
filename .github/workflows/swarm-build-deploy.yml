@@ -127,8 +127,9 @@ jobs:
                docker stack rm ${{ vars.APP_NAME }}
 
                docker stack deploy \
-               -c swarm/docker-compose.stack.yml \ 
-               -c swarm/docker-compose.stack.${{ github.event.inputs.environment }}.override.yml ${{ vars.APP_NAME }}
+               -c swarm/docker-compose.stack.yml \
+               -c swarm/docker-compose.stack.${{ github.event.inputs.environment }}.override.yml \
+               ${{ vars.APP_NAME }}
 
 
         
