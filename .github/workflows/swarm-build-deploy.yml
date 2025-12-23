@@ -20,6 +20,7 @@ on:
 env:
  VM_IP: ${{secrets.AZURE_VM_DEV_IP}}
  VM_USER: ${{secrets.AZURE_VM_DEV_USER}}
+ VM_DOMAIN: ${{secrets.AZURE_VM_DEV_DOMAIN}}
  var1: This is workflow level env var accessible in the entire workflow
  TAG: ${{ github.run_id }}  # we are setting a workflow level env variable. It could also be job level
  # So that it can be accessed in the docker compose file.
@@ -146,6 +147,8 @@ jobs:
                APPNAME=${{ vars.APP_NAME }} \
                TAG=${{ env.TAG }} \
                TARGETENV=${{ github.event.inputs.environment }} \
+               AZURE_VM_DOMAIN=${{env.VM_DOMAIN}} \
+               VM_USER=${{env.VM_USER}} \
                docker stack deploy \
                -c swarm/docker-compose.stack.yml \
                -c swarm/docker-compose.stack.${{ github.event.inputs.environment }}.override.yml \
