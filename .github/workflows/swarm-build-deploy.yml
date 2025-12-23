@@ -1,0 +1,136 @@
+name: Build and Deploy the Gateway to Swarm
+
+# workflow_dispatch ensures we have manual trigger of workflow and we can provide user input details as well
+on: 
+ workflow_dispatch:
+   inputs:
+     environment:
+        type: choice
+        description: "Specify the environment(dev or prod)"
+        options:
+          - dev
+          - prod
+        required: true
+        default: 'dev'
+      
+     tag:
+      description: "Specify the image tag to be pulled for prod"
+      required: false
+
+env:
+ VM_IP: ${{secrets.AZURE_VM_DEV_IP}}
+ VM_USER: ${{secrets.AZURE_VM_DEV_USER}}
+ var1: This is workflow level env var accessible in the entire workflow
+ TAG: ${{ github.run_id }}  # we are setting a workflow level env variable. It could also be job level
+ # So that it can be accessed in the docker compose file.
+
+jobs:
+  build-and-deploy:
+       runs-on: ubuntu-latest
+
+       env:
+        var2: This is job level env var accessible in all steps
+
+       steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4 
+            env:
+             var3: This is step level env var accessible only in this step  
+        
+
+          - name: Validate PROD inputs
+          # for prod deployments the tag input from the user must not be empty. -z does the empty string check
+            run: |
+             if [[ "${{ github.event.inputs.environment }}" == "prod" && -z "${{ github.event.inputs.tag }}" ]]; then
+             echo "ERROR: tag is required for PROD deployments"
+             exit 1
+             fi
+          
+          - name: Set conditional env
+          # for prod we set the value of the tab env variable to the tag input provided by the user.
+            run: |
+             if [[ "${{ github.event.inputs.environment }}" == "prod" ]]; then
+             echo "TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
+             echo "VM_IP=${{secrets.AZURE_VM_PROD_IP}}" >> $GITHUB_ENV
+             echo "VM_USER=${{secrets.AZURE_VM_PROD_USER}}" >> $GITHUB_ENV
+             fi
+
+          - name: Access env variables
+          # we verify the value of the env variables
+            run: |
+              # env.var3 will be empty because its set at step level
+              echo "${{env.var1}}" "${{env.var2}}" "${{env.TAG}}"
+              echo "${{github.event.inputs.environment}}"
+                        
+
+          - name: Login to DockerHub
+          # executed only for dev
+            if: ${{ github.event.inputs.environment == 'dev' }}
+            uses: docker/login-action@v3
+            with:
+              username: ${{vars.DOCKERHUB_USERNAME}}
+              password: ${{secrets.DOCKERHUB_PASSWORD}}
+              # added the dockerhub username as repo variable and password as repo secret
+
+
+          - name: Build Docker image for express app
+          # executed only for dev
+            if: ${{ github.event.inputs.environment == 'dev' }}
+            uses: docker/build-push-action@v5
+            with:
+              push: true  # so that image is pushed to Dockerhub as well
+              context: .   # this ensures the paths in the Dockerfile work as expected
+              file: ./docker/Dockerfile  # this ensures the Dockerfile is located in the correct folder
+              tags: ${{vars.DOCKERHUB_USERNAME}}/${{vars.APP_NAME}}:${{env.TAG}}
+
+          - name: Build Docker image for filebeat
+          # executed only for dev
+            if: ${{ github.event.inputs.environment == 'dev' }}
+            uses: docker/build-push-action@v5
+            with:
+              push: true  # so that image is pushed to Dockerhub as well
+              context: .   # this ensures the paths in the Dockerfile work as expected
+              file: ./filebeat/Dockerfile  # this ensures the Dockerfile is located in the correct folder
+              tags: ${{vars.DOCKERHUB_USERNAME}}/${{vars.APP_NAME}}-filebeat:${{env.TAG}}
+          
+          # - name: Run using compose
+          # # this will create containers in the github runner and will destroy them once workflow ends. no containers are created in docker desktop
+          #   run: |
+          #     docker compose -p product-microservices-${{github.event.inputs.environment}} -f docker/docker-compose.yml -f docker/docker-compose.${{github.event.inputs.environment}}.override.yml up -d --remove-orphans --no-build
+
+          - name: Copy compose files to VM
+            uses: appleboy/scp-action@v0.1.7
+            with:
+              host: ${{ env.VM_IP }}
+              username: ${{ env.VM_USER }}
+              key: ${{ secrets.AZURE_VM_SSH_KEY }}
+              source: "swarm/**,docker/environments/*.env"
+              target: "/home/${{ env.VM_USER }}/${{vars.APP_NAME}}/"
+
+          - name: Deploy to Azure VM
+            uses: appleboy/ssh-action@v1.0.3
+            # the action requires the parameters specified under with:
+            with:
+             host: ${{ env.VM_IP }}   # asure ip
+             username: ${{env.VM_USER}} # aszure username
+             key: ${{ secrets.AZURE_VM_SSH_KEY }}  # your private key. your public key will be given to azure
+             script: |
+               cd /home/${{ env.VM_USER }}/${{vars.APP_NAME}}
+               
+               cat <<EOF > /home/${{ env.VM_USER }}/${{vars.APP_NAME}}/swarm/.env 
+               DOCKERHUB_USER=${{ vars.DOCKERHUB_USERNAME }} 
+               APPNAME=${{ vars.APP_NAME }} 
+               TAG=${{ env.TAG }} 
+               TARGETENV=${{ github.event.inputs.environment }} 
+               EOF
+
+               docker stack rm ${{ vars.APP_NAME }}
+
+               docker stack deploy \
+               -c swarm/docker-compose.stack.yml \ 
+               -c swarm/docker-compose.stack.${{ github.event.inputs.environment }}.override.yml ${{ vars.APP_NAME }}
+
+
+        
+            
+

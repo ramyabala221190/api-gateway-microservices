@@ -2,13 +2,13 @@ services:
    nginx:
      ports: 
          - 4000:8400
-     env_file: ../environments/${TARGETENV}.env
+     env_file: ../docker/environments/${TARGETENV}.env
      networks:
          - shared-swarm-net-dev
 
    
    express-gateway-service:
-      env_file: ../environments/${TARGETENV}.env
+      env_file: ../docker/environments/${TARGETENV}.env
       ports: 
         - 8300:8300
       networks:
