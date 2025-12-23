@@ -1,7 +1,10 @@
 services:
    nginx:
      ports: 
-         - 4000:8400
+       - target: 8400 
+         published: 4000
+         protocol: tcp 
+         mode: host
      env_file: ../docker/environments/${TARGETENV}.env
      networks:
          - shared-swarm-net-dev
