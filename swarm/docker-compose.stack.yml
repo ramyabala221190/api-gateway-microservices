@@ -22,18 +22,18 @@ services:
       volumes:
          - express-logs-volume:/var/log/${APPNAME}-express/
 
-    filebeat:
-      image: ${DOCKERHUB_USER}/${APPNAME}-filebeat:${TAG}
-      deploy:
-        restart_policy:
-          condition: on-failure
-        placement:
-          constraints: [node.labels.role == manager]
-      environment:
-         - strict.perms=false
-      volumes:
-         - nginx-logs-volume:/var/log/${APPNAME}-nginx/:ro
-         - express-logs-volume:/var/log/${APPNAME}-express/:ro
+    # filebeat:
+    #   image: ${DOCKERHUB_USER}/${APPNAME}-filebeat:${TAG}
+    #   deploy:
+    #     restart_policy:
+    #       condition: on-failure
+    #     placement:
+    #       constraints: [node.labels.role == manager]
+    #   environment:
+    #      - strict.perms=false
+    #   volumes:
+    #      - nginx-logs-volume:/var/log/${APPNAME}-nginx/:ro
+    #      - express-logs-volume:/var/log/${APPNAME}-express/:ro
 
 
 volumes:
