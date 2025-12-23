@@ -129,17 +129,14 @@ jobs:
              username: ${{env.VM_USER}} # aszure username
              key: ${{ secrets.AZURE_VM_SSH_KEY }}  # your private key. your public key will be given to azure
              script: |
-               cd /home/${{ env.VM_USER }}/${{vars.APP_NAME}}
+               cd /home/${{ env.VM_USER }}/${{vars.APP_NAME}}/
                
-               cat <<EOF > /home/${{ env.VM_USER }}/${{vars.APP_NAME}}/swarm/.env 
-               DOCKERHUB_USER=${{ vars.DOCKERHUB_USERNAME }}
-               APPNAME=${{ vars.APP_NAME }}
-               TAG=${{ env.TAG }}
-               TARGETENV=${{ github.event.inputs.environment }}
-               EOF
-
                docker stack rm ${{ vars.APP_NAME }}
-
+               
+               DOCKERHUB_USER=${{ vars.DOCKERHUB_USERNAME }} \
+               APPNAME=${{ vars.APP_NAME }} \
+               TAG=${{ env.TAG }} \
+               TARGETENV=${{ github.event.inputs.environment }} \
                docker stack deploy \
                -c swarm/docker-compose.stack.yml \
                -c swarm/docker-compose.stack.${{ github.event.inputs.environment }}.override.yml \

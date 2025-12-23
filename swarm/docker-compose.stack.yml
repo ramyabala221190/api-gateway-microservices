@@ -11,7 +11,7 @@ services:
          - nginx-logs-volume:/var/log/${APPNAME}-nginx/
   
     express-gateway-service:
-      image: ${DOCKERHUB_USER}/ ${APPNAME}-express:${TAG}
+      image: ${DOCKERHUB_USER}/${APPNAME}-express:${TAG}
       deploy:
         replicas: 3
         restart_policy:
