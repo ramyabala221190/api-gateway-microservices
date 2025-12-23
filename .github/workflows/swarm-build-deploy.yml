@@ -118,10 +118,10 @@ jobs:
                cd /home/${{ env.VM_USER }}/${{vars.APP_NAME}}
                
                cat <<EOF > /home/${{ env.VM_USER }}/${{vars.APP_NAME}}/swarm/.env 
-               DOCKERHUB_USER=${{ vars.DOCKERHUB_USERNAME }} 
-               APPNAME=${{ vars.APP_NAME }} 
-               TAG=${{ env.TAG }} 
-               TARGETENV=${{ github.event.inputs.environment }} 
+               DOCKERHUB_USER=${{ vars.DOCKERHUB_USERNAME }}
+               APPNAME=${{ vars.APP_NAME }}
+               TAG=${{ env.TAG }}
+               TARGETENV=${{ github.event.inputs.environment }}
                EOF
 
                docker stack rm ${{ vars.APP_NAME }}
