@@ -73,25 +73,39 @@ jobs:
               # added the dockerhub username as repo variable and password as repo secret
 
 
-          - name: Build Docker image for express app
+          - name: Build Docker image for express
           # executed only for dev
-            if: ${{ github.event.inputs.environment == 'dev' }}
+            if: ${{ github.event.inputs.environment == 'dev' }}    
             uses: docker/build-push-action@v5
             with:
               push: true  # so that image is pushed to Dockerhub as well
               context: .   # this ensures the paths in the Dockerfile work as expected
-              file: ./docker/Dockerfile  # this ensures the Dockerfile is located in the correct folder
-              tags: ${{vars.DOCKERHUB_USERNAME}}/${{vars.APP_NAME}}:${{env.TAG}}
+              file: ./MicroservicesAPIGateway/Dockerfile  # this ensures the Dockerfile is located in the correct folder
+              tags: ${{vars.DOCKERHUB_USERNAME}}/${{vars.APP_NAME}}-express:${{env.TAG}} # must match image name in docker-compose.yml
+              build-args: |
+                  targetENV=${{github.event.inputs.environment }}
 
-          - name: Build Docker image for filebeat
-          # executed only for dev
+          - name: Build docker image for nginx
             if: ${{ github.event.inputs.environment == 'dev' }}
             uses: docker/build-push-action@v5
             with:
               push: true  # so that image is pushed to Dockerhub as well
               context: .   # this ensures the paths in the Dockerfile work as expected
-              file: ./filebeat/Dockerfile  # this ensures the Dockerfile is located in the correct folder
-              tags: ${{vars.DOCKERHUB_USERNAME}}/${{vars.APP_NAME}}-filebeat:${{env.TAG}}
+              file: ./nginx/Dockerfile  # this ensures the Dockerfile is located in the correct folder
+              tags: ${{vars.DOCKERHUB_USERNAME}}/${{vars.APP_NAME}}-nginx:${{env.TAG}}  # must match image name in docker-compose.yml
+              build-args: |
+                  targetENV=${{ github.event.inputs.environment }}
+
+
+          # - name: Build Docker image for filebeat
+          # # executed only for dev
+          #   if: ${{ github.event.inputs.environment == 'dev' }}
+          #   uses: docker/build-push-action@v5
+          #   with:
+          #     push: true  # so that image is pushed to Dockerhub as well
+          #     context: .   # this ensures the paths in the Dockerfile work as expected
+          #     file: ./filebeat/Dockerfile  # this ensures the Dockerfile is located in the correct folder
+          #     tags: ${{vars.DOCKERHUB_USERNAME}}/${{vars.APP_NAME}}-filebeat:${{env.TAG}}
           
           # - name: Run using compose
           # # this will create containers in the github runner and will destroy them once workflow ends. no containers are created in docker desktop
