@@ -7,8 +7,14 @@ services:
         placement:
           constraints: [node.labels.role == manager]
        env_file: ../docker/environments/common.env
+       environment:
+         - stdoutPath=/var/log/${APPNAME}-nginx/combined.log
+         - stderrPath=/var/log/${APPNAME}-nginx/error.log
+         - AZURE_VM_DOMAIN=${AZURE_VM_DOMAIN} # exposed from github actions but must be declared here to access in conf file
        volumes:
          - nginx-logs-volume:/var/log/${APPNAME}-nginx/
+         - /home/${VM_USER}/${APPNAME}/nginx/nginx.${TARGETENV}.conf:/etc/nginx/templates/default.conf.template
+
   
     express-gateway-service:
       image: ${DOCKERHUB_USER}/${APPNAME}-express:${TAG}
@@ -19,6 +25,9 @@ services:
         placement:
           constraints: [node.labels.role == manager]
       env_file: ../docker/environments/common.env
+      environment:
+         - stdoutPath=/var/log/${APPNAME}-express/combined.log
+         - stderrPath=/var/log/${APPNAME}-express/error.log
       volumes:
          - express-logs-volume:/var/log/${APPNAME}-express/
 
