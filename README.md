@@ -1303,6 +1303,15 @@ Next ,we need to update the role of each node
 
 From the manager node, create overlay network to enable communication between the swarm containers
 on the 3 nodes. Creating overlay network is very very important.
+So if you are using a seperate swarm cluster for prod, execute the 2nd command in the manager node
+of that swarm cluster only. In our example, since we are using single swarm cluster for dev and prod,
+we are executing both these commands on the same manager node.
+
+```
+docker network create --driver overlay shared-swarm-net-dev
+docker network create --driver overlay shared-swarm-net-prod
+
+```
 
 Apart from nginx,we have not provided the ports: for any service in any app.
 expose: too is not needed. Overlay networking is sufficient to enable communication between the containers.

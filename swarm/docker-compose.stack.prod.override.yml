@@ -10,8 +10,8 @@ services:
     volumes:
       - /etc/letsencrypt/live/${AZURE_VM_DOMAIN}:/etc/nginx/ssl/live/${AZURE_VM_DOMAIN}:ro 
       - /etc/letsencrypt/archive/${AZURE_VM_DOMAIN}:/etc/nginx/ssl/archive/${AZURE_VM_DOMAIN}:ro    
-      - /etc/letsencrypt/options-ssl-nginx.conf:/etc/nginx/options-ssl-nginx.conf:ro 
-      - /etc/letsencrypt/ssl-dhparams.pem:/etc/nginx/ssl-dhparams.pem:ro
+      # - /etc/letsencrypt/options-ssl-nginx.conf:/etc/nginx/options-ssl-nginx.conf:ro 
+      # - /etc/letsencrypt/ssl-dhparams.pem:/etc/nginx/ssl-dhparams.pem:ro
     networks:
          - shared-swarm-net-prod
 
