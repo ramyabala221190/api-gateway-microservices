@@ -13,6 +13,7 @@ to the Azure VM.
 We have deployed all the 3 microservices and the ELK to the same VM to keep it simple.
 So we have 2 VM's for 2 environments: dev and prod. Each VM has all the microservices and elk deployed.
 No docker swarm in use in this scenario.
+Ensure docker installed in the 2 VM's.
 
 =>Build only the services that have Dockerfiles
 =>Build each microservice once, not per replica
@@ -1251,23 +1252,24 @@ For prod: Often runs in a dedicated cluster (with 3 managers for quorum + multip
 ### Our deployment approach
 
 We have 3 VM's - 1 manager and 2 worker nodes forming the swarm cluster.
+The manager node  hosts the nginx+express-
+gateway app, the 2nd VM acting as the worker node the cart microservice and the 3rd VM also
+acting as the worker node hosts the product microservice.
+
 Since its an example for learning, we will deploy the prod and dev version on the same cluster but seperate it via different overlay
 networks and different stack names.
 This ensures they are isolated.
 Ideally a seperate swarm cluster is required for the prod environment atleast with atleast 3 managers with no workload i.e apps deployed
 and mlutiple working nodes.
 
-Since nginx alone is exposed to the internet, ssl certificates are added only for nginx in prod environment in the same cluster.
+Since nginx alone is exposed to the internet, ssl certificates are added only for nginx for prod environment in the same cluster.
 So we have installed certbot on the manager node and requested for ssl certificates.
 
-A swarm requires a min of 1 manager node and multiple working nodes.
-Normally, we dont deploy any apps in the manager node. Manager node is mainly for assigning
-tasks to worker nodes. 
-Since its a small example, I have 3 Azure VM's - 1 acts as the manager node and hosts the nginx+express-
-gateway app, the 2nd hosts the cart microservice and the 3rd hosts the product microservice.
+We have nginx running in 2 different stacks: for dev and prod on the same VM.
+This is fine because the host ports are different in the host-container port mapping.
+Each nginx container will have its own configuration file. So no issue.
 
-When creating the VM, its important that they belong to the same resource group, same region and the same
-virtual network to allow any communication between the VM's.
+When creating the 3 VM's, its important that they belong to the same resource group, same region and the same virtual network to allow any communication between the VM's.
 Same resource group and same region is a pre-requisite to choose the same virtual network.
 
 It may be possible, that the same region, has no capacity. In that case, you may chose a different region and hence a different virtual network.
@@ -1275,7 +1277,7 @@ In that scenario, you need to go to this new virtual network, go to settings ---
 a new peering where you select the common virtual network of the other VM's.
 Ensure you check the first 2 checkboxes in remote and local peering to ensure traffic can go both ways
 
-To verify if this works, open 3 CMD's and ssh into the 3 VM's respectively.
+To verify if this works, open 3 CMD's and ssh into the 3 VM's respectively using public ip.
 Try to ping the private IP of other 2 VM's from a particular VM and check if its reachable. If 
 yes then peering has succeeded and you can proceed.
 This is very important to enable the worker nodes join the swarm.
@@ -1299,7 +1301,13 @@ From the manager node execute the below to verify the 3 nodes.
 docker node ls
 ```
 
-Next ,we need to update the role of each node
+Next ,we need to update the role of the manager and worker nodes from the manager node
+
+```
+docker node update --label-add role=manager <node id>
+docker node update --label-add role=worker1 <node id>
+docker node update --label-add role=worker2 <node id>
+```
 
 From the manager node, create overlay network to enable communication between the swarm containers
 on the 3 nodes. Creating overlay network is very very important.
@@ -1317,10 +1325,33 @@ Apart from nginx,we have not provided the ports: for any service in any app.
 expose: too is not needed. Overlay networking is sufficient to enable communication between the containers.
 Because nginx alone will be accessible from the browser.
 So open the firewall for the host port of nginx, on the VM where nginx+express-gateway is hosted.
+Since both dev and prod stacks deployed to the same VM, we have opened inbound tcp ports 4000 and 4001 
+on the manager node VM.
 
 In dev:
 
 nginx(4000:8400) ---> express-gateway-service(8300) ----> cart(9091)/product(8091)--->mongodb(27017)
+
+In prod:
+
+nginx(4001:8500) ---> express-gateway-service(8305) ----> cart(9095)/product(8095)--->mongodb(27017)
+
+We are deploying using the github CI CD pipeline. The .github/workflows/swarm-build-deploy.yml is the
+workflow file to perform the docker image build and deployment to the manager node.
+
+Note that we are building docker images only for those docker services which have Dockerfile.
+
+We are copying the compose files, environment files and nginx conf files to the manager node.
+Nothing will be done on the worker nodes.
+We are not even going to ssh into the worker nodes.
+Then executing docker stack deploy to create the new stack, and the manager node assigns the 
+tasks to respective worker nodes to pull the docker images and run the containers.
+
+So remember that docker containers will run in the worker node/ manager node based on the
+placement constraints.
+The manager node is responsible for assigning the worker nodes the task of pulling the docker images  and running the docker containers.
+
+
 
 
 
