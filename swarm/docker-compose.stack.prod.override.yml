@@ -3,9 +3,15 @@ services:
     env_file: ../docker/environments/${TARGETENV}.env
     ports: 
          - 4001:8500
+         - 80:80
    #  volumes:
    #     - C:/Users/User/certificates/self-signed-custom-ca/nginx.key:/etc/nginx/ssl/nginx.key
    #     - C:/Users/User/certificates/self-signed-custom-ca/nginx.crt:/etc/nginx/ssl/nginx.crt
+    volumes:
+      - /etc/letsencrypt/live/${AZURE_VM_DOMAIN}:/etc/nginx/ssl/live/${AZURE_VM_DOMAIN}:ro 
+      - /etc/letsencrypt/archive/${AZURE_VM_DOMAIN}:/etc/nginx/ssl/archive/${AZURE_VM_DOMAIN}:ro    
+      - /etc/letsencrypt/options-ssl-nginx.conf:/etc/nginx/options-ssl-nginx.conf:ro 
+      - /etc/letsencrypt/ssl-dhparams.pem:/etc/nginx/ssl-dhparams.pem:ro
     networks:
          - shared-swarm-net-prod
 

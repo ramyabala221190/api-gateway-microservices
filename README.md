@@ -1,7 +1,7 @@
 This is seperate repository for adding express-gateway and nginx configuration files.
 
 
-# Deployment strategy
+# Deployment strategy for Non-Swarm scenario
 Deploy elk before other microservices because the latter depends on the former.
 Let the former keep running.
 
@@ -11,6 +11,7 @@ The .github/workflows/build-deploy.yml contains the workflow for building the pr
 to the Azure VM.
 
 We have deployed all the 3 microservices and the ELK to the same VM to keep it simple.
+So we have 2 VM's for 2 environments: dev and prod. Each VM has all the microservices and elk deployed.
 No docker swarm in use in this scenario.
 
 =>Build only the services that have Dockerfiles
@@ -1161,6 +1162,158 @@ Observe the way we are passing build arguments to be used in the Dockerfile usin
                   targetENV=${{ github.event.inputs.environment }}
 
 ```
+
+## Working with Swarm
+
+A Docker Swarm cluster is simply a group of machines (nodes) running Docker that are joined together and managed as a single system. Swarm turns multiple Docker engines into one logical “cluster” so you can deploy and scale services across them without worrying about individual containers.
+
+## Key Concepts in a Swarm Cluster
+Cluster: The whole group of machines (nodes) participating in Swarm.
+
+Nodes:
+
+Manager nodes: Maintain cluster state, schedule tasks, and handle orchestration. They know where every service is running.
+
+Worker nodes: Run the actual containers (tasks) assigned by managers.
+
+Services: The definition of what to run (image, replicas, ports). Swarm ensures the desired number of replicas are running across the cluster.
+
+Tasks: The individual containers that make up a service.
+
+Overlay networks: Virtual networks that span all nodes in the cluster, allowing services to communicate securely across machines.
+
+## Points to note
+
+Managers can run workloads(apps), but it’s not best practice in production
+
+Ideally, managers should only orchestrate, not host heavy workloads.
+
+In dev/test, it’s fine to colocate gateway + Nginx on the manager.
+
+Overlay networks are critical.
+
+All services (gateway, Nginx, microservices) must be attached to the same overlay network for DNS resolution to work.
+
+You’ve already set up shared-swarm-net-dev and shared-swarm-net-prod.
+
+With only one manager, if that VM goes down, the cluster loses quorum. For production, you’d want 3 managers (odd number for Raft consensus).
+
+
+## Seperation based on environment
+
+### Option 1: Single Swarm Cluster, Multiple Environments
+You keep one Swarm cluster (your current 1 manager + 2 workers).
+
+Each environment (dev, QA, prod) is separated by:
+
+=>Different stacks (docker stack deploy -c docker-compose.qa.yml gateway_qa)
+
+=>Different overlay networks (shared-swarm-net-qa, shared-swarm-net-dev, etc.)
+
+=>Different service names/tags (e.g., gateway_qa_nginx, gateway_dev_nginx).
+
+Pros:
+
+Cost‑effective (reuse same VMs).
+
+Easier to manage (one cluster to monitor).
+
+Cons:
+
+Environments share the same nodes → noisy neighbor risk (QA load could affect dev).
+
+Less isolation if you want strict separation.
+
+### Option 2: Separate Swarm Clusters per Environment
+You spin up dedicated manager + workers for QA.
+
+Each environment has its own cluster (e.g., dev cluster, QA cluster, prod cluster).
+
+Pros:
+
+Strong isolation (QA cannot impact dev/prod).
+
+Cleaner separation for networking, monitoring, scaling.
+
+Cons:
+
+More infra cost (extra VMs).
+
+More operational overhead (multiple clusters to maintain).
+
+⚖️ Best Practice
+For dev/QA: Most teams run them in the same cluster, separated by stacks/networks. It’s cheaper and simpler.
+
+For prod: Often runs in a dedicated cluster (with 3 managers for quorum + multiple workers), to guarantee stability and isolation.
+
+👉 In your case (1 manager + 2 workers), you don’t need another manager + 2 workers for QA. You can deploy QA services into the same cluster, just on a separate overlay network and stack. If you want strict isolation (e.g., QA load testing shouldn’t ever affect dev), then yes — you’d provision a separate cluster for QA.
+
+### Our deployment approach
+
+We have 3 VM's - 1 manager and 2 worker nodes forming the swarm cluster.
+Since its an example for learning, we will deploy the prod and dev version on the same cluster but seperate it via different overlay
+networks and different stack names.
+This ensures they are isolated.
+Ideally a seperate swarm cluster is required for the prod environment atleast with atleast 3 managers with no workload i.e apps deployed
+and mlutiple working nodes.
+
+Since nginx alone is exposed to the internet, ssl certificates are added only for nginx in prod environment in the same cluster.
+So we have installed certbot on the manager node and requested for ssl certificates.
+
+A swarm requires a min of 1 manager node and multiple working nodes.
+Normally, we dont deploy any apps in the manager node. Manager node is mainly for assigning
+tasks to worker nodes. 
+Since its a small example, I have 3 Azure VM's - 1 acts as the manager node and hosts the nginx+express-
+gateway app, the 2nd hosts the cart microservice and the 3rd hosts the product microservice.
+
+When creating the VM, its important that they belong to the same resource group, same region and the same
+virtual network to allow any communication between the VM's.
+Same resource group and same region is a pre-requisite to choose the same virtual network.
+
+It may be possible, that the same region, has no capacity. In that case, you may chose a different region and hence a different virtual network.
+In that scenario, you need to go to this new virtual network, go to settings ---> peerings and add
+a new peering where you select the common virtual network of the other VM's.
+Ensure you check the first 2 checkboxes in remote and local peering to ensure traffic can go both ways
+
+To verify if this works, open 3 CMD's and ssh into the 3 VM's respectively.
+Try to ping the private IP of other 2 VM's from a particular VM and check if its reachable. If 
+yes then peering has succeeded and you can proceed.
+This is very important to enable the worker nodes join the swarm.
+
+Ensure docker is installed on all 3 VM's before proceeding.
+
+Next step will be to initialise the swarm on the VM chosen to be the manager node.
+
+```
+docker swarm init --advertise-addr <private ip of the VM>
+
+```
+
+The above command will give the joining tokens for the other 2 VM's to join as worker nodes of the swarm.
+
+SSH into the other 2 VM's ,execute the commands and join the swarm.
+
+From the manager node execute the below to verify the 3 nodes.
+
+```
+docker node ls
+```
+
+Next ,we need to update the role of each node
+
+From the manager node, create overlay network to enable communication between the swarm containers
+on the 3 nodes. Creating overlay network is very very important.
+
+Apart from nginx,we have not provided the ports: for any service in any app.
+expose: too is not needed. Overlay networking is sufficient to enable communication between the containers.
+Because nginx alone will be accessible from the browser.
+So open the firewall for the host port of nginx, on the VM where nginx+express-gateway is hosted.
+
+In dev:
+
+nginx(4000:8400) ---> express-gateway-service(8300) ----> cart(9091)/product(8091)--->mongodb(27017)
+
+
 
 
 
