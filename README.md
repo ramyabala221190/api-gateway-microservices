@@ -1,11 +1,16 @@
 This is seperate repository for adding express-gateway and nginx configuration files.
 
+We can run the project locally without docker, with docker using Docker Desktop and on a remote server(using compose and swarm)
 
 # Deployment strategy for Non-Swarm scenario
+We will be using the compose files within docker folder when deploying all connected microservices like cart,gateway and ek 
+to the same VM.
+
 Deploy elk before other microservices because the latter depends on the former.
 Let the former keep running.
 
-We are using GitHub actions to make CI CD to Azure VM possible.
+Also deploy the cart and product microsvcs before gateway because gateway depends on these
+microsvcs.
 
 The .github/workflows/build-deploy.yml contains the workflow for building the project and deploying
 to the Azure VM.
@@ -1025,7 +1030,7 @@ If the delivery service is down, the message can be queued for processing later.
 But this doesnt stop the order service from doing its work.
 So Async communication between microservice is great when immediate feedback is not needed.
 
-## Github actions
+# Github actions
 
 Github actions are defined in the .github/workflows folder in the root of the project.
 We have defined only 1 workflow in the build-deploy.yml file within the .github/workflows folder.
@@ -1164,7 +1169,7 @@ Observe the way we are passing build arguments to be used in the Dockerfile usin
 
 ```
 
-## Working with Swarm
+# Working with Swarm
 
 A Docker Swarm cluster is simply a group of machines (nodes) running Docker that are joined together and managed as a single system. Swarm turns multiple Docker engines into one logical “cluster” so you can deploy and scale services across them without worrying about individual containers.
 
@@ -1249,20 +1254,25 @@ For prod: Often runs in a dedicated cluster (with 3 managers for quorum + multip
 
 👉 In your case (1 manager + 2 workers), you don’t need another manager + 2 workers for QA. You can deploy QA services into the same cluster, just on a separate overlay network and stack. If you want strict isolation (e.g., QA load testing shouldn’t ever affect dev), then yes — you’d provision a separate cluster for QA.
 
-### Our deployment approach
+## Our swarm deployment approach
 
-We have 3 VM's - 1 manager and 2 worker nodes forming the swarm cluster.
-The manager node  hosts the nginx+express-
-gateway app, the 2nd VM acting as the worker node the cart microservice and the 3rd VM also
-acting as the worker node hosts the product microservice.
+We will be using the compose files within the swarm folder.
+We are using GitHub actions to make CI CD to Azure VM possible.
 
-Since its an example for learning, we will deploy the prod and dev version on the same cluster but seperate it via different overlay
-networks and different stack names.
+We are deploying using the github CI CD pipeline. The .github/workflows/swarm-build-deploy.yml is the
+workflow file to perform the docker image build and deployment to the manager node.
+
+So we have totally 4 Azure VM's- 1 manager and 3 workers.
+Ideally no apps should be deployed to the manager. But in our example, we have deployed the gateway app to the manager,
+product microsvcs to 1 worker, cart microsvcs to another worker and elk to the last worker.
+So the manager also acts as a worker in addition to its orchestration duties.
+
+Since its an example for learning, we will deploy the prod and dev version on the same cluster but seperate it via different overlay networks and different stack names.
 This ensures they are isolated.
 Ideally a seperate swarm cluster is required for the prod environment atleast with atleast 3 managers with no workload i.e apps deployed
 and mlutiple working nodes.
 
-Since nginx alone is exposed to the internet, ssl certificates are added only for nginx for prod environment in the same cluster.
+Since nginx alone is exposed to the internet, ssl certificates are added only for nginx service for prod environment in the same cluster.
 So we have installed certbot on the manager node and requested for ssl certificates.
 
 We have nginx running in 2 different stacks: for dev and prod on the same VM.
@@ -1282,33 +1292,45 @@ Try to ping the private IP of other 2 VM's from a particular VM and check if its
 yes then peering has succeeded and you can proceed.
 This is very important to enable the worker nodes join the swarm.
 
-Ensure docker is installed on all 3 VM's before proceeding.
+The compose stack files,env files, nginx config files if any for all microsvcs and elk will be copied to the manager node only.
+We will never do any file copy to the worker nodes.
+So deployment of the files,config files for each project will happen individually from each of the project's github action workflow file.
 
-Next step will be to initialise the swarm on the VM chosen to be the manager node.
+Executing docker stack deploy as a part of deployment will create the new stack, and the manager node assigns the 
+tasks to respective worker nodes to pull the docker images and run the containers.
+So remember that docker containers will run in the worker node/ manager node based on the
+placement constraints.
+The manager node is responsible for assigning the worker nodes the task of pulling the docker images and running the docker containers.
 
+If nginx config files or ssl certs need to be shared across nodes, it will be done via Swarm configs/secrets. Explained in detail in the elk project.
+So let it be files/certificates, it will be only on the manager node. It will only be shared(if required) with other nodes via swarm configs/
+secrets.
+We never ssh into the worker nodes in github actions workflow file for any reason. Its not required.
+
+
+Prior to deployment, ensure the below steps are completed:
+
+1. Swarm initialised on VM to function as manager node.
 ```
 docker swarm init --advertise-addr <private ip of the VM>
 
 ```
-
-The above command will give the joining tokens for the other 2 VM's to join as worker nodes of the swarm.
-
-SSH into the other 2 VM's ,execute the commands and join the swarm.
-
+2. Add other VM's as worker nodes to the swarm by ssh'ing into these VM's individually and executing the join command.
 From the manager node execute the below to verify the 3 nodes.
 
 ```
 docker node ls
 ```
 
-Next ,we need to update the role of the manager and worker nodes from the manager node
-
+3. Update the roles of each of the nodes from the manager node.
 ```
 docker node update --label-add role=manager <node id>
 docker node update --label-add role=worker1 <node id>
 docker node update --label-add role=worker2 <node id>
 ```
 
+
+4. Create overlay networks for each environment from the manager node.
 From the manager node, create overlay network to enable communication between the swarm containers
 on the 3 nodes. Creating overlay network is very very important.
 So if you are using a seperate swarm cluster for prod, execute the 2nd command in the manager node
@@ -1321,12 +1343,20 @@ docker network create --driver overlay shared-swarm-net-prod
 
 ```
 
+5. Ensure docker is installed in all VM's.
+6. Ensure certbot is installed in the manager node and certificates are available in the manager node.
+
+
 Apart from nginx,we have not provided the ports: for any service in any app.
 expose: too is not needed. Overlay networking is sufficient to enable communication between the containers.
 Because nginx alone will be accessible from the browser.
 So open the firewall for the host port of nginx, on the VM where nginx+express-gateway is hosted.
 Since both dev and prod stacks deployed to the same VM, we have opened inbound tcp ports 4000 and 4001 
 on the manager node VM.
+
+We are using manager DNS alone to access cart and product microservices and the elk as well.
+So all inbound ports are opened only in the manager node.
+No ports are opened in any of the other nodes.
 
 In dev:
 
@@ -1336,24 +1366,14 @@ In prod:
 
 nginx(4001:8500) ---> express-gateway-service(8305) ----> cart(9095)/product(8095)--->mongodb(27017)
 
-We are deploying using the github CI CD pipeline. The .github/workflows/swarm-build-deploy.yml is the
-workflow file to perform the docker image build and deployment to the manager node.
+Useful commands:
 
-Note that we are building docker images only for those docker services which have Dockerfile.
+1. docker service ps <service id>
 
-We are copying the compose files, environment files and nginx conf files to the manager node.
-Nothing will be done on the worker nodes.
-We are not even going to ssh into the worker nodes.
-Then executing docker stack deploy to create the new stack, and the manager node assigns the 
-tasks to respective worker nodes to pull the docker images and run the containers.
+2. docker service logs <service id>
+This is similar to "docker container logs <container id>"
 
-So remember that docker containers will run in the worker node/ manager node based on the
-placement constraints.
-The manager node is responsible for assigning the worker nodes the task of pulling the docker images  and running the docker containers.
+3. docker service inspect <service id>
 
-
-
-
-
-
+4. docker stack services <stack name>
 
