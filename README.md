@@ -1377,3 +1377,38 @@ This is similar to "docker container logs <container id>"
 
 4. docker stack services <stack name>
 
+# Meaning of the environment variables and secrets from Github
+
+These are set in the Repo settings ---> Secrets and Variables ---> Actions
+
+Below are the secrets:
+
+In swarm, Since we are deploying the gateway project into the VM node functioning as manager node,
+we have no seperate secret storing the swarm manager ip and dns. I have updated the below 2 secrets to store manager node DNS
+and public IP.
+
+AZURE_VM_DEV_DOMAIN
+AZURE_VM_DEV_IP
+
+AZURE_VM_SSH_KEY: Contains the private key. Public key provided to azure.
+DOCKERHUB_PASSWORD: Contains the password for Dockerhub account
+
+Below are used for non-swarm deployment scenario in the build-deploy.yml.
+Since we used 2 Azure VM's : one for dev and other for prod environment, we have DNS name, public IP
+and username for the 2 VM's. The names below are self explanatory. We will ssh into the particular
+VM based on the environment to deploy the compose and env files into a particular folder and 
+then execute "docker compose up" to run the containers.
+
+AZURE_VM_DEV_DOMAIN
+AZURE_VM_DEV_IP
+AZURE_VM_DEV_USER
+AZURE_VM_PROD_DOMAIN
+AZURE_VM_PROD_IP
+AZURE_VM_PROD_USER
+
+Below are the variables:
+
+APP_NAME: It is the name assigned to application deployed to Azure VM
+DOCKERHUB_USERNAME: This is the dockerhub login username
+
+
