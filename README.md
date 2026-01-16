@@ -634,9 +634,8 @@ to logstash.
 
 # SSL
 
-SSL is not required for express-gateway unless 
+SSL is not required for express-gateway. Below is just for info purpose because ssl is handled at nginx level.
 
-For express-gateway, we have a seperate config file for prod, where we make use of ssl: gateway.config.prod.yml
 
 ```
 1. We have generated a single Root CA Certificate used by all the microservices and gateways
