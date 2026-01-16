@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: {{.Values.services.gateway.name}}-deployment-{{.Values.global.environment}}
+ labels:
+  app: {{.Values.services.gateway.name}}-deployment-{{.Values.global.environment}}
+
+spec:
+  selector:
+    matchLabels:
+      app: {{.Values.services.gateway.name}}-deployment-{{.Values.global.environment}}
+
+  template:
+    metadata:
+      labels:
+        app: {{.Values.services.gateway.name}}-deployment-{{.Values.global.environment}}
+      annotations: # This checksum will change whenever the ConfigMap changes 
+        checksum/common-config: {{ include (print $.Template.BasePath "/common-config.yaml") . | sha256sum }} 
+    spec:
+     containers:
+       - name : {{.Values.services.gateway.name}}-container-{{.Values.global.environment}}
+         image: {{.Values.image.gateway}}
+         ports:
+          - containerPort : {{.Values.app.gateway.port}}
+         env:
+           - name: PRODUCT_APP_HOST
+             valueFrom:
+               configMapKeyRef:
+                  name: common-{{.Values.config.name}}
+                  key: PRODUCT_APP_HOST
+           - name: CART_APP_HOST
+             valueFrom:
+               configMapKeyRef:
+                  name: common-{{.Values.config.name}}
+                  key: CART_APP_HOST
+           - name: PRODUCT_SVCS_PORT
+             valueFrom:
+               configMapKeyRef:
+                  name: common-{{.Values.config.name}}
+                  key: PRODUCT_SVCS_PORT
+           - name: CART_SVCS_PORT
+             valueFrom:
+               configMapKeyRef:
+                  name: common-{{.Values.config.name}}
+                  key: CART_SVCS_PORT
+           - name: LOG_LEVEL
+             valueFrom:
+               configMapKeyRef:
+                  name: common-{{.Values.config.name}}
+                  key: LOG_LEVEL
+           - name: EXPRESS_GATEWAY_PORT
+             valueFrom:
+               configMapKeyRef:
+                  name: common-{{.Values.config.name}}
+                  key: EXPRESS_GATEWAY_PORT
+           - name: pluginPath
+             valueFrom:
+               configMapKeyRef:
+                  name: common-{{.Values.config.name}}
+                  key: pluginPath

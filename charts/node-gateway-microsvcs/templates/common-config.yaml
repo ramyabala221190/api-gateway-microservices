@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-{{.Values.config.name}}
+
+data:
+  PRODUCT_APP_HOST: {{.Values.services.product.name}}-service-{{.Values.global.environment}}
+  CART_APP_HOST : {{.Values.services.cart.name}}-service-{{.Values.global.environment}}
+  PRODUCT_SVCS_PORT: "{{.Values.services.product.port}}"
+  CART_SVCS_PORT: "{{.Values.services.cart.port}}"
+  LOG_LEVEL: {{.Values.global.logLevel}}
+  EXPRESS_GATEWAY_PORT: "{{.Values.app.gateway.port}}"
+  pluginPath: {{.Values.plugins.logger.path}}

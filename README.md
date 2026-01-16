@@ -1406,9 +1406,277 @@ AZURE_VM_PROD_DOMAIN
 AZURE_VM_PROD_IP
 AZURE_VM_PROD_USER
 
+
 Below are the variables:
 
 APP_NAME: It is the name assigned to application deployed to Azure VM
 DOCKERHUB_USERNAME: This is the dockerhub login username
 
+# Kubernetes
+
+We are deploying to a single cluster. Environments are seperated based on namespace:
+dev-node-namespace and prod-node-namespace.
+
+Check the documentation folder for log screenshots.
+
+In /etc/hosts, we have added 2 entries for 2 hosts for the 2 environments
+
+```
+ 127.0.0.1       dev-node-microsvcs
+ 127.0.0.1       prod-node-microsvcs
+
+```
+
+This project is the entry point to the application. Although we used nginx with docker compose and swarm, it is redundant to use
+nginx in kubernetes cluster due to the presence of Ingress Nginx controller.
+
+product,cart microsvcs and gateway not exposed outside the cluster. Only the ingress controller is exposed via port-forward.
+
+The first step is to install ingress controllers for dev and prod environments.
+
+## Add Ingress-Nginx Helm Repo
+
+```
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+```
+## Install Ingress Controller for "dev"
+
+helm install ingress-dev ingress-nginx/ingress-nginx --namespace ingress-dev --create-namespace --set controller.ingressClass=ingress-class-dev --set controller.ingressClassResource.name=ingress-class-dev --set controller.watchNamespace=dev-node-namespace --set controller.service.name=ingress-dev-controller
+
+### Verify installation
+
+```
+C:\Users\User>kubectl get svc -n ingress-dev
+NAME                                             TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+ingress-dev-ingress-nginx-controller             LoadBalancer   10.96.126.58    <pending>     80:30098/TCP,443:30589/TCP   52s
+ingress-dev-ingress-nginx-controller-admission   ClusterIP      10.96.234.230   <none>        443/TCP                      52s
+
+C:\Users\User>
+
+
+C:\Users\User>kubectl get pods -n ingress-dev
+NAME                                                   READY   STATUS    RESTARTS   AGE
+ingress-dev-ingress-nginx-controller-7f85f8d8b-6q2xk   1/1     Running   0          73s
+
+C:\Users\User>
+```
+
+## Install Ingress Controller for "prod"
+
+```
+helm install ingress-prod ingress-nginx/ingress-nginx --namespace ingress-prod --create-namespace --set controller.ingressClass=ingress-class-prod --set controller.ingressClassResource.name=ingress-class-prod --set controller.watchNamespace=prod-node-namespace --set controller.service.name=ingress-prod-controller
+
+```
+
+### Verify installation
+
+```
+C:\Users\User>kubectl get svc -n ingress-prod
+NAME                                              TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE
+ingress-prod-ingress-nginx-controller             LoadBalancer   10.96.238.19   <pending>     80:31205/TCP,443:31906/TCP   21m
+ingress-prod-ingress-nginx-controller-admission   ClusterIP      10.96.63.190   <none>        443/TCP                      21m
+
+C:\Users\User>
+
+
+C:\Users\User>kubectl get pods -n ingress-prod
+NAME                                                     READY   STATUS    RESTARTS   AGE
+ingress-prod-ingress-nginx-controller-55f8999694-gmpb9   1/1     Running   0          106s
+
+C:\Users\User>
+
+```
+
+## Understanding the ingress-resource.yaml
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: microsvcs-ingress-{{.Values.global.environment}}
+  annotations:
+    kubernetes.io/ingress.class: ingress-class-{{.Values.global.environment}}
+    nginx.ingress.kubernetes.io/proxy-body-size: "256m"
+    nginx.ingress.kubernetes.io/enable-rewrite-log: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: ingress-class-{{.Values.global.environment}}
+  rules:
+    - host: {{.Values.global.environment}}-{{.Values.global.hostName}}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{.Values.services.gateway.name}}-service-{{.Values.global.environment}}
+                port:
+                  number: {{.Values.services.gateway.port}}
+
+```
+
+Using the metadata.name, we can use the "kubectl describe" to check the ingress rules we have defined.
+For example:
+```
+kubectl describe ingress microsvcs-ingress-dev -n dev-node-namespace
+kubectl describe ingress microsvcs-ingress-prod -n prod-node-namespace
+
+```
+
+annotations.kubernetes.io/ingress.class and spec.ingressClassName must match. It also important that it matches the ingress class name
+we give when installing the ingress controller.
+For example, when installing the ingress controller for "dev" below,observe that controller.ingressClass must equal controller.ingressClassResource.name and these must again match the pattern of annotations.kubernetes.io/ingress.class and spec.ingressClassName in ingress-resource.yaml
+
+```
+helm install ingress-prod ingress-nginx/ingress-nginx --namespace ingress-prod --create-namespace --set controller.ingressClass=ingress-class-prod --set controller.ingressClassResource.name=ingress-class-prod --set controller.watchNamespace=prod-node-namespace --set controller.service.name=ingress-prod-controller
+
+```
+
+spec.rules.host specify the host for which the ingress rules need to be applied. 
+{{.Values.global.hostName}} will be node-microsvcs. It will be prefixed with "dev-" or "prod-" based on the environment.
+
+```
+rules:
+    - host: {{.Values.global.environment}}-{{.Values.global.hostName}}
+```
+We have just 1 rule. For prefix path "/", route the requests to the below service.name, running on service.port.number.
+This will be the express-gateway-service-dev/express-gateway-service-prod ClusterIP service running on port 8081.
+
+```
+service:
+                name: {{.Values.services.gateway.name}}-service-{{.Values.global.environment}}
+                port:
+                  number: {{.Values.services.gateway.port}}
+
+```
+
+## Accessing app in the browser.
+
+To make the ingress controllers accessible in the browser, need to port-forward. This is because the EXTERNAL-IP is pending as expected
+with Docker Desktop. You wont get this issue with AKS because a proper public ip will be provisioned when you create an ingress controller.
+
+```
+kubectl port-forward svc/ingress-dev-ingress-nginx-controller  8083:80 -n ingress-dev
+```
+This means you are going to  forward any requests received on port 8083 to port 80, where the ingress-dev-ingress-nginx-controller is listening
+you can now access the dev app on http://dev-node-microsvcs:8083/
+
+```
+kubectl port-forward svc/ingress-prod-ingress-nginx-controller  8084:80 -n ingress-prod
+
+```
+This means you are going to forward any requests received on port 8084 to port 80, where the ingress-prod-ingress-nginx-controller is listening
+
+you can now access the prod app on http://prod-node-microsvcs:8084/
+
+
+Below will describe the ingress rules for "dev"
+
+```
+kubectl describe ingress microsvcs-ingress-dev -n dev-node-namespace
+```
+
+![Ingress rules for dev](./documentation/kubernetes/describe-ingress-dev.png)
+
+Below will describe the ingress rules for "prod"
+
+```
+kubectl describe ingress microsvcs-ingress-prod -n prod-node-namespace
+```
+
+![Ingress rules for dev](./documentation/kubernetes/describe-ingress-prod.png)
+
+##  Pods and Services
+
+We just have a deployment for the express gateway.
+We have 1 ClusterIP service sitting in front of the pod running the express-gateway container.
+
+In express-service.yaml, the port is 8081 and targetPort will be 8300 in dev and 8305 in prod.
+
+Below is the flow for dev. Similar flow in prod. Difference will be in the service names and ports.
+
+For Routing to product microsvcs in dev
+
+
+Client sends a request in the browser  http://dev-node-microsvcs:8083/  ----> 
+Ingress Controller(ingress-dev-ingress-nginx-controller) on port 80 --->
+gateway-express-app-service-dev Cluster IP on port 8081 →
+express-gateway pod(listening on 8300) →
+product-express-app-service-dev Cluster IP (8081 → 8091) →
+product-express-app pod(listening on 8091) →
+product-mongo-db-service-dev Cluster IP on port 27017 →
+MongoDB pod(listenig on 27017)
+
+
+For Routing to cart microsvcs in dev
+
+Client sends a request in the browser  http://dev-node-microsvcs:8083/  ----> 
+Ingress Controller(ingress-dev-ingress-nginx-controller) on port 80 --->
+gateway-express-app-service-dev Cluster IP on port 8081 →
+express-gateway pod(listening on 8300) →
+cart-express-app-service-dev Cluster IP on port 8081 →
+cart-express-app pod(listeninng on 9091) →
+cart-mongo-db-service-dev Cluster IP on port 27017 →
+MongoDB pod(listening on 27017)
+
+When cart and product microsvcs are making calls to each other in "dev", it happens via the gateway-express-app-service-dev Cluster IP
+on port 8081.
+
+For example, cart microsvcs making a call to product microsvcs in dev
+
+cart-express-app pod(listeninng on 9091) --->
+gateway-express-app-service-dev Cluster IP (8081 → 8300) →
+express-gateway pod(listening on 8300) →
+product-express-app-service-dev Cluster IP (8081 → 8091) →
+product-express-app pod(listening on 8091) →
+product-mongo-db-service-dev Cluster IP (27017 → 27017) →
+MongoDB pod(listenig on 27017)
+
+## Package.json scripts
+
+In the package.json, we have the scripts for starting the project.
+
+For "dev" environment, we execute the "start-dev" script.
+
+```
+    "start-dev":"npm run build-docker && npm run create-namespace-dev && npm run set-context-dev && npm run helm-pack && npm run helm-upgrade-dev",
+
+```
+
+Here we build the docker image for express app, create namespace for dev, switch the current context,
+pack the chart artifacts into a .tgz file and then run "helm upgrade".
+
+For "prod" environment, we execute the "start-prod" script.
+
+```
+ "start-prod":"npm run create-namespace-prod && npm run set-context-prod && npm run helm-upgrade-prod",
+
+```
+
+Here we just create namespace, set context and do the "helm upgrade" based on the .tgz file created
+earlier for "dev".
+
+We have a basic values.yml file and an override file for "dev" and "prod" : values-dev.yml and values-prod.yml.
+
+We use these files when doing the helm upgrade in the "start-dev" and "start-prod" script. We can use -f or --values to pass the path to the
+values.yml and the override file. Always first pass the values.yaml followed by the override file so that values are correctly overrided.
+--set can also be used override fields in the values.yaml. Since the value of image tag is not static, we prefer to override it using --set rather than the override file. 
+
+```
+    "helm-upgrade-dev":"helm upgrade product-express-app-release ./charts/node-product-microsvcs/ --install --debug -f ./charts/node-product-microsvcs/values.yml -f ./charts/node-product-microsvcs/values-dev.yml --set image.express=node-product-express-app:2",
+
+```
+
+```
+    "helm-upgrade-prod":"helm upgrade product-express-app-release ./artifacts/node-product-microsvcs-chart-1.0.4.tgz --install --debug -f ./charts/node-product-microsvcs/values.yml -f ./charts/node-product-microsvcs/values-prod.yml --set image.express=node-product-express-app:2"
+```
+The product microsvcs cannot be directly accessed in the browser because we have used ClusterIP service.
+We can access it in the browser,if we do a port-forward for the express app ClusterIP service.
+
+But the product and cart microsvcs can only be accessed via the gateway. The gateway too is not exposed.
+Client sends a request in the browser ---> Ingress controller ---> gateway ---> product/cart express app ---> product/cart mongo db.
+
+We are skipping the use of nginx in kubernetes due to the presence of Ingress Nginx controller, which takes care of routing
+the request to the express gateway service
 

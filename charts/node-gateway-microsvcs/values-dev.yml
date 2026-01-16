@@ -1,0 +1,8 @@
+# Global settings
+global:
+  environment: "dev"
+
+# Application-specific configuration
+app:
+  gateway:
+    port: 8300

@@ -7,7 +7,17 @@
     "local-nodocker": "set DOTENV_CONFIG_PATH=./local.env&&node -r dotenv/config MicroservicesAPIGateway/server.js >> combined.log 2> error.log",
     "docker-local-dev-build": "cross-env TARGETENV=dev docker compose --env-file docker/environments/local.env  -p gateway-dev -f docker/docker-compose.local.yml -f docker/docker-compose.dev.override.yml  build --no-cache",
     "docker-local-dev-up": "cross-env TARGETENV=dev docker compose --env-file docker/environments/local.env -p gateway-dev -f docker/docker-compose.local.yml -f docker/docker-compose.dev.override.yml up -d --remove-orphans --no-build --scale express-gateway-service=3",
-    "docker-local-prod-up": "cross-env TARGETENV=prod docker compose --env-file docker/environments/local.env -p gateway-prod -f docker/docker-compose.local.yml -f docker/docker-compose.prod.override.yml up -d --remove-orphans --no-build"
+    "docker-local-prod-up": "cross-env TARGETENV=prod docker compose --env-file docker/environments/local.env -p gateway-prod -f docker/docker-compose.local.yml -f docker/docker-compose.prod.override.yml up -d --remove-orphans --no-build",
+    "build-docker":"docker build -f MicroservicesAPIGateway/Dockerfile --build-arg targetENV=dev -t node-gateway-express-app:2 .",
+    "start-dev":"npm run build-docker && npm run create-namespace-dev && npm run set-context-dev && npm run helm-pack && npm run helm-upgrade-dev",
+    "start-prod":"npm run create-namespace-prod && npm run set-context-prod && npm run helm-upgrade-prod",
+    "create-namespace-dev":"kubectl create namespace dev-node-namespace --dry-run=client -o yaml | kubectl apply -f -",
+    "create-namespace-prod":"kubectl create namespace prod-node-namespace --dry-run=client -o yaml | kubectl apply -f -",
+    "set-context-dev":"kubectl config set-context --current --namespace=dev-node-namespace",
+    "set-context-prod":"kubectl config set-context --current --namespace=prod-node-namespace",
+    "helm-pack":"helm package --version=1.0.4 ./charts/node-gateway-microsvcs/ --destination ./artifacts",
+    "helm-upgrade-dev":"helm upgrade gateway-express-app-release ./charts/node-gateway-microsvcs/ --install --debug -f ./charts/node-gateway-microsvcs/values.yml -f ./charts/node-gateway-microsvcs/values-dev.yml --set image.gateway='node-gateway-express-app:2'",
+    "helm-upgrade-prod":"helm upgrade gateway-express-app-release ./artifacts/node-gateway-microsvcs-chart-1.0.4.tgz --install --debug -f ./charts/node-gateway-microsvcs/values.yml -f ./charts/node-gateway-microsvcs/values-prod.yml --set image.gateway='node-gateway-express-app:2'"
   },
   "author": "",
   "license": "ISC",

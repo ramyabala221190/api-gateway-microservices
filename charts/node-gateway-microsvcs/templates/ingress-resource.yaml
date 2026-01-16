@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: microsvcs-ingress-{{.Values.global.environment}}
+  annotations:
+    kubernetes.io/ingress.class: ingress-class-{{.Values.global.environment}}
+    nginx.ingress.kubernetes.io/proxy-body-size: "256m"
+    nginx.ingress.kubernetes.io/enable-rewrite-log: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: ingress-class-{{.Values.global.environment}}
+  rules:
+    - host: {{.Values.global.environment}}-{{.Values.global.hostName}}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{.Values.services.gateway.name}}-service-{{.Values.global.environment}}
+                port:
+                  number: {{.Values.services.gateway.port}}

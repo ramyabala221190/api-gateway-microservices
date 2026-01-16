@@ -1,0 +1,8 @@
+# Global settings
+global:
+  environment: "prod"
+
+# Application-specific configuration
+app:
+  gateway:
+    port: 8305

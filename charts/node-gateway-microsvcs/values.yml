@@ -1,0 +1,38 @@
+# Global settings
+global:
+  environment: ""
+  hostName: node-microsvcs
+  logLevel: debug
+
+# Image configuration
+image:
+  gateway: ""
+
+# Plugin configuration
+plugins:
+  logger:
+    path: /var/lib/eg/plugins/logger-plugin
+
+# Application services
+services:
+  gateway:
+    name: gateway-express-app
+    type: ClusterIP
+    port: 8081
+  product:
+    name: product-express-app
+    type: ClusterIP
+    port: 8081
+  cart:
+    name: cart-express-app
+    type: ClusterIP
+    port: 8081
+
+# Application-specific configuration
+app:
+  gateway:
+    port: 8300
+
+# ConfigMap or externalized configuration
+config:
+  name: gateway-app-config

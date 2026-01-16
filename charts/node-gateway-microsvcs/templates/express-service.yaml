@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+ name: {{.Values.services.gateway.name}}-service-{{.Values.global.environment}}  #service name
+spec:
+ type: {{.Values.services.gateway.type}}  #type of service
+ selector:
+    app: {{.Values.services.gateway.name}}-deployment-{{.Values.global.environment}} #selecting the pods
+ ports: 
+   - port: {{.Values.services.gateway.port}}
+     targetPort: {{.Values.app.gateway.port}} # this is the container port to which requests are forwarded to 
