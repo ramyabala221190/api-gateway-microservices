@@ -4,12 +4,16 @@ express:
 apiEndpoints:
   common:
     paths: "*"
+  userApi:
+    paths: ["/myuser","/myuser/*"]
   productApi:
     # host: "http://*"
     paths: ["/myproduct","/myproduct/*"]
   cartApi:
     # host: "http://*"
     paths: ["/mycart","/mycart/*"]
+  orderApi:
+    paths: ["/myorder","/myorder/*"]
 serviceEndpoints:
   productService:
     urls:  
@@ -18,6 +22,14 @@ serviceEndpoints:
   cartService:
     urls:  
      - http://${CART_APP_HOST}:${CART_SVCS_PORT}
+  
+  userService:
+    urls:
+     - http://${USER_APP_HOST}:${USER_SVCS_PORT}
+
+  orderService:
+    urls:
+      - http://${ORDER_APP_HOST}:${ORDER_SVCS_PORT}
     
 policies:
   - basic-auth
@@ -56,12 +68,12 @@ pipelines:
     # So the request can be routed to mlutiple instances of express-gateway. Each instance maintains its own count.
     # So if all the 4 requests have not gone to a single instance,you will not get the below message.
     # To test this, in nginx config, in the upstream block, keep only 1 instance of express gateway
-      - rate-limit:
-           - action:
-              max: 4
-              windowMs: 60000
-              message: 'You have exceeded 4 requests/min'
-              rateLimitBy: ${req.headers.host}
+      # - rate-limit:
+      #      - action:
+      #         max: 4
+      #         windowMs: 60000
+      #         message: 'You have exceeded 4 requests/min'
+      #         rateLimitBy: ${req.headers.host}
       - proxy:
           - action:
               serviceEndpoint: productService 
@@ -75,15 +87,52 @@ pipelines:
     policies:
     # Uncomment "key-auth:" when instructed to in the Getting Started guide.
     # - key-auth:
-      - rate-limit:
-           - action:
-              max: 2
-              windowMs: 60000
-              message: 'You have exceeded 2 requests/min'
-              rateLimitBy: ${req.headers.host}
+      # - rate-limit:
+      #      - action:
+      #         max: 100
+      #         windowMs: 60000
+      #         message: 'You have exceeded 100 requests/min'
+      #         rateLimitBy: ${req.headers.host}
       - proxy:
           - action:
               serviceEndpoint: cartService 
               changeOrigin: true
               timeout: 5000
               #stripPath: true
+  userPipeline:
+    apiEndpoints:
+      - userApi
+    policies:
+    # Uncomment "key-auth:" when instructed to in the Getting Started guide.
+    # - key-auth:
+      # - rate-limit:
+      #      - action:
+      #         max: 2
+      #         windowMs: 60000
+      #         message: 'You have exceeded 2 requests/min'
+      #         rateLimitBy: ${req.headers.host}
+      - proxy:
+          - action:
+              serviceEndpoint: userService 
+              changeOrigin: true
+              timeout: 5000
+              #stripPath: true
+  orderPipeline:
+    apiEndpoints:
+      - orderApi
+    policies:
+    # Uncomment "key-auth:" when instructed to in the Getting Started guide.
+    # - key-auth:
+      # - rate-limit:
+      #      - action:
+      #         max: 2
+      #         windowMs: 60000
+      #         message: 'You have exceeded 2 requests/min'
+      #         rateLimitBy: ${req.headers.host}
+      - proxy:
+          - action:
+              serviceEndpoint: orderService 
+              changeOrigin: true
+              timeout: 5000
+              #stripPath: true
+
